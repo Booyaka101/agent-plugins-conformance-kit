@@ -36,7 +36,7 @@ Two things measured rather than assumed:
 
 Every number below was produced by a command run on this machine, not estimated.
 
-- `npm test` - 461 tests, 7 files, all passing, from a wiped `node_modules` and `dist`.
+- `npm test` - 476 tests, 8 files, all passing, from a wiped `node_modules` and `dist`.
 - `npm run typecheck` - clean, with `noUnusedLocals`, `noUnusedParameters`,
   `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` on.
 - `npm run verify:sources` - 89/89 spec quotes verbatim, 14/14 Agent Skills constraints,
@@ -101,7 +101,7 @@ oversight rather than a decision. Filing these upstream is the first distributio
 
 ## Senior review pass, second round
 
-Reviewing the code as a stranger, and then actually shipping it, turned up eight defects
+Reviewing the code as a stranger, and then actually shipping it, turned up nine defects
 that tests had not caught. All are fixed, and each has either a regression test or, for
 the action, a CI job that runs it.
 
@@ -143,6 +143,17 @@ the action, a CI job that runs it.
    `git ls-files fixtures` against the files on disk. That test was verified by putting
    the old rule back and watching it fail. A `.gitattributes` also pins the corpus to LF,
    because a CRLF checkout on Windows would change the bytes a client's parser sees.
+
+9. **The corpus self-check failed on Linux only, and CI caught it.** The
+   `AP-7.1-IMMEDIATE-CHILD__case-sensitive-filename` fixture ships
+   `skills/beta/skill.md` on purpose: on Windows and macOS that is the same file as
+   `SKILL.md`, on Linux it is a different one, and that difference is the fixture. But
+   `verifyCorpus` demanded a `SKILL.md` for optional skills as well as required ones, so
+   `apconform verify` failed on every Linux runner and took the `pack` job with it. Every
+   local run had been on a case-insensitive filesystem, which is precisely why the matrix
+   exists. An optional skill's file may now legitimately be absent, and when it is present
+   the frontmatter is still checked. `test/verify.test.ts` covers `verifyCorpus` against
+   synthetic corpora, including this case.
 
 Checked and found not to be a problem: staging temp directories do not leak (three
 consecutive full runs left zero behind; the four seen earlier were from runs killed

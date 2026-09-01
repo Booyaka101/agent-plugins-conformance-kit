@@ -307,7 +307,7 @@ component names that exist on disk with matching `SKILL.md` frontmatter.
 
 ```
 npm install
-npm test              # builds, then runs 457 tests
+npm test              # builds, then runs 476 tests
 npm run verify:sources # checks every quote against the live specification
 ```
 
