@@ -1,5 +1,8 @@
 # agent-plugins-conformance-kit
 
+[![CI](https://github.com/Booyaka101/agent-plugins-conformance-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Booyaka101/agent-plugins-conformance-kit/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/agent-plugins-conformance-kit.svg)](https://www.npmjs.com/package/agent-plugins-conformance-kit)
+
 A conformance test suite for Agent Plugins 1.0.0 **client loaders**. It ships 133 real
 plugin directories on disk, each paired with the load report a conformant client has to
 produce for it, plus a runner that diffs your client's answer against the corpus.
