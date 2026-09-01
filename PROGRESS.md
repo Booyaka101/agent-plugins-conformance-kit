@@ -49,8 +49,9 @@ Every number below was produced by a command run on this machine, not estimated.
 - `npm run verify:sources` - 89/89 spec quotes verbatim, 14/14 Agent Skills constraints,
   21/21 checklist items, both schemas unchanged in the ways fixtures rely on.
 - `apconform verify` - corpus OK, 133 fixtures, 89 rules.
-- `apconform run --adapter adapters/kuralle.mjs` - 129 pass, 3 fail, 0 error, 1 skipped on
-  Windows. On Linux the skipped fixture runs and passes, giving 130 pass, 3 fail.
+- `apconform run --adapter adapters/kuralle.mjs` - 130 pass, 2 fail, 0 error, 1 skipped on
+  Windows. On Linux the skipped fixture runs and passes, giving 131 pass, 2 fail.
+- `apconform run --adapter adapters/pi.mjs` - 132 pass, 0 fail, 0 error, 1 skipped.
 - Against a deliberately naive loader (validate-and-reject plus recursive skill discovery)
   the suite reports 68 pass, 64 fail, including the exact issue #77 failure shape.
 - `npm pack` - 551 files, 86.5 kB, 513 of them fixture files. No test files leak, and the
@@ -100,8 +101,9 @@ The suite found two real conformance defects in `@kuralle-agents/plugins` 0.25.0
 1. **§4.1 boundary rule 3** - a `skills/` entry linked outside the plugin root is followed
    and its skill is loaded. `loadSkillsComponent` has no containment check.
 2. **§4.1 boundary rule 2** - the same gap for the `skills/` location itself.
+
 The loader does enforce containment on `plugin.json` itself, so 1 and 2 read as an
-oversight rather than a decision. Filing these upstream is the first distribution step.
+oversight rather than a decision. Both are reported as kuralle/kuralle-agents#23.
 
 ## Deliberate design decisions a reviewer should know about
 
@@ -113,7 +115,7 @@ oversight rather than a decision. Filing these upstream is the first distributio
 - **A fourth severity, `accept`, was added** alongside the brief's
   `fatal|report-and-ignore|skip-component`. Many rules require the client to load
   something, and labelling those with a failure-boundary severity would have been wrong.
-- **`observability: "partial"` on 8 fixtures.** A load report cannot see subprocess
+- **`observability: "partial"` on 9 fixtures.** A load report cannot see subprocess
   environments or expanded placeholder values, so those fixtures say in writing what they
   do and do not assert instead of pretending to cover §9 fully.
 - **`optional` and `atLeastOne` in `fixture.json`.** Where the specification permits more
