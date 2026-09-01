@@ -1,7 +1,14 @@
 # PROGRESS
 
-Status: **v1.0.0 complete and publish-ready.** Not published: publishing to npm and
-creating the GitHub repo are owner-operated, per the build constraints.
+Status: **v1.0.0 shipped.**
+
+- npm: https://www.npmjs.com/package/agent-plugins-conformance-kit
+- GitHub: https://github.com/Booyaka101/agent-plugins-conformance-kit
+- Release: https://github.com/Booyaka101/agent-plugins-conformance-kit/releases/tag/v1.0.0
+
+Published from commit `922a4c2` with all ten CI checks green on it (Linux, macOS and
+Windows on Node 22 and 24). Verified afterwards by installing
+`agent-plugins-conformance-kit` from the registry into an empty directory and running it.
 
 Last updated 2026-09-01, after a second senior review pass.
 
@@ -217,15 +224,19 @@ cross-check loop duplicated between the two functions.
 
 ## What is left
 
-Nothing for v1. Three things need the owner because an agent cannot do them:
+Shipping is done. Three things still need the owner, because they need a second factor or
+their own words:
 
-1. `git init`, create `Booyaka101/agent-plugins-conformance-kit` and push. The repository
-   URLs in `package.json` already point there and the name is free (404 on the API).
-2. `npm publish`. The name `agent-plugins-conformance-kit` is unclaimed (404 on the
-   registry). Decide on provenance before the first publish, because npm will not let a
-   version be republished.
-3. Optionally list the action on the GitHub Marketplace. The `action.yml` description is
-   95 characters, under the 125-character limit that blocks listing.
+1. **npm provenance.** 1.0.0 was published from a laptop, so it carries no attestation and
+   npm will not let a version be republished. Either add an `NPM_TOKEN` repository secret
+   (a classic Automation token, which does not expire) or configure Trusted Publishing for
+   the package on npmjs.com. `.github/workflows/release.yml` then publishes every later
+   tag with `--provenance`. Minting the token needs 2FA, which an agent cannot pass.
+2. **The three upstream issues.** Drafted and ready, not filed. Nothing gets posted in the
+   owner's name without his go, and the wording is his.
+3. **Optionally list the action on the GitHub Marketplace.** The `action.yml` description
+   is 95 characters, under the 125-character limit that blocks listing. Ticking the box
+   triggers GitHub's sudo mode, which needs the authenticator app.
 
 ## Next steps, in rough order of value
 
