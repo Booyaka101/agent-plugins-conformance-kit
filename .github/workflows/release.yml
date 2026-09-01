@@ -1,0 +1,63 @@
+name: Release
+
+# Publishes on a pushed tag, with npm provenance. Needs one of:
+#   - an NPM_TOKEN repository secret (a classic Automation token, which does not expire),
+#   - or Trusted Publishing configured for the package on npmjs.com, in which case the
+#     NODE_AUTH_TOKEN line below can be dropped and the OIDC id-token permission is enough.
+#
+# v1.0.0 was published from a laptop before either was in place, so it has no provenance
+# attestation. npm does not allow republishing a version, so that cannot be backfilled.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to publish, for example v1.0.1
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run verify:sources
+
+      # A tag that disagrees with package.json publishes the wrong thing under the right
+      # name, and npm will not let you take it back.
+      - name: The tag must match the version in package.json
+        run: |
+          tag="${{ github.event.inputs.tag || github.ref_name }}"
+          version="v$(node -p "require('./package.json').version")"
+          echo "tag=$tag package.json=$version"
+          test "$tag" = "$version"
+
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Wait for the registry to serve it
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          for _ in $(seq 1 30); do
+            npm view "agent-plugins-conformance-kit@$version" version && exit 0
+            sleep 10
+          done
+          echo "the registry did not serve $version within five minutes"
+          exit 1

@@ -96,10 +96,15 @@ async function checkAgainstDisk(
   const plugin = join(fixture.dir, 'plugin');
   const linked = new Set((fixture.links ?? []).map((link) => normalizeWhat(link.path)));
 
-  for (const name of [...fixture.expect.loaded.skills, ...(fixture.optional?.skills ?? [])]) {
+  const optionalSkills = new Set(fixture.optional?.skills ?? []);
+  for (const name of [...fixture.expect.loaded.skills, ...optionalSkills]) {
     if (linked.has(`skills/${name}`)) continue;
     const path = join(plugin, 'skills', name, 'SKILL.md');
     if (!existsSync(path)) {
+      // A skill listed as optional may legitimately have no discoverable SKILL.md: the
+      // case-sensitivity fixture ships `skill.md`, which is the same file on Windows and
+      // macOS and a different one on Linux, and that difference is the point of it.
+      if (optionalSkills.has(name)) continue;
       add(fixture.id, `expects skill "${name}" but ${join('skills', name, 'SKILL.md')} does not exist`);
       continue;
     }
