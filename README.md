@@ -294,6 +294,22 @@ the fastest way to answer "what is this failing fixture actually doing".
 in the folder its confidence implies, quotes that rule correctly, and expects only
 component names that exist on disk with matching `SKILL.md` frontmatter.
 
+## Spec versions
+
+This kit targets Agent Plugins **1.0.0**, which is the version marked `Published`
+and the only one whose canonical schema identifiers resolve.
+
+A `1.1.0` working draft exists in the spec repository. As of writing it is a version
+bump and nothing else: the prose is byte-identical apart from version strings and one
+reworded conformance sentence, both schemas differ only in `$id`, `description` and the
+`$schema` `const`, and `https://agent-plugins.org/schemas/1.1.0/` still returns 404.
+87 of the 89 rules here quote sentences that are unchanged in the draft. The two that
+are not are `AP-5.2-SCHEMA-CANONICAL-VALUE` and `AP-7.2.1-MCP-SCHEMA-CANONICAL-VALUE`,
+which embed the version in the canonical identifier and are expected to change.
+
+Supporting a second version is a `--spec` flag over the same corpus rather than a new
+corpus, so it can wait until 1.1.0 is published and its identifiers resolve.
+
 ## Limitations
 
 - A load report describes what a client loaded. It cannot see subprocess environments,
