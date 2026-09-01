@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.5-NAME-REPETITION",
+  "confidence": "core",
+  "spec": "5.5",
+  "title": "consecutive periods in the plugin name reject the plugin",
+  "rationale": "\"too.many..dots\" is the spec's own example, and it is the case a hyphen-only check misses.",
+  "quote": "Consecutive hyphens and consecutive periods are not allowed.",
+  "observability": "report",
+  "expect": {
+    "rejected": "name-repetition",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

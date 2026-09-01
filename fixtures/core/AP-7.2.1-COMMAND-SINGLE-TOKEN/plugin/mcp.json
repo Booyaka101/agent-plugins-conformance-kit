@@ -1,0 +1,18 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "shelly": {
+      "type": "stdio",
+      "command": "node server.js --port 8080"
+    },
+    "fine": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "server.js",
+        "--port",
+        "8080"
+      ]
+    }
+  }
+}

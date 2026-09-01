@@ -1,0 +1,118 @@
+{
+  "source": "https://agent-plugins.org/client-implementers/conformance",
+  "note": "The official client conformance checklist is non-normative and says so. It is used here only to audit rules.json for gaps. Fixtures cite specification sections, never this checklist.",
+  "sections": [
+    {
+      "heading": "Plugin loader",
+      "items": [
+        {
+          "text": "Load a plugin from a directory and enforce the filesystem-resolved package boundary.",
+          "rules": ["AP-4.1-CONTAINMENT", "AP-4.1-BOUNDARY-MANIFEST", "AP-4.1-BOUNDARY-COMPONENT-LOCATION", "AP-4.1-BOUNDARY-SKILL", "AP-4.1-BOUNDARY-MCP-ENTRY", "AP-4.1-RELATIVE-PATH-PREFIX", "AP-4.1-OPAQUE-VALUES"]
+        },
+        {
+          "text": "Select locally supported manifest rules from $schema; do not retrieve a schema during loading.",
+          "rules": ["AP-5.2-SCHEMA-SELECTS-RULES", "AP-5.2-NO-SCHEMA-FETCH", "AP-5.2-SCHEMA-CANONICAL-VALUE", "AP-5.2-UNSUPPORTED-VERSION"]
+        },
+        {
+          "text": "Validate the closed plugin.json schema and required $schema and name fields.",
+          "rules": ["AP-5.2-CLOSED-SCHEMA", "AP-5.2-JSON-OBJECT", "AP-5.3-REQUIRED-FIELDS", "AP-5.4-AUTHOR-CLOSED", "AP-5.5-NAME-LENGTH", "AP-5.5-NAME-CHARSET", "AP-5.5-NAME-BOUNDARY", "AP-5.5-NAME-REPETITION", "AP-5.5-NAME-PERIODS-ALLOWED"]
+        },
+        {
+          "text": "Report and ignore unknown top-level fields.",
+          "rules": ["AP-5.2-UNKNOWN-FIELD", "AP-5.2-NO-UNKNOWN-SEMANTICS"]
+        },
+        {
+          "text": "Ignore a non-object extensions field and unimplemented extension namespaces.",
+          "rules": ["AP-8.1-EXTENSIONS-NOT-OBJECT", "AP-8.1-IGNORE-UNIMPLEMENTED-NAMESPACE", "AP-8.1-EXTENSIONS-MEMBER-OBJECTS"]
+        },
+        {
+          "text": "Reject other fatal manifest violations before component discovery.",
+          "rules": ["AP-5.2-OTHER-VIOLATION-FATAL", "AP-5.1-MANIFEST-BEFORE-COMPONENTS", "AP-5.4-METADATA-TYPE-ONLY"]
+        }
+      ]
+    },
+    {
+      "heading": "Discovery and isolation",
+      "items": [
+        {
+          "text": "Discover supported component types only from their fixed locations.",
+          "rules": ["AP-6.1-FIXED-LOCATIONS", "AP-6.1-NO-INLINE-CONFIG", "AP-7.1-IMMEDIATE-CHILD", "AP-7.1-DEPTH", "AP-7.2.1-CONFIG-PATH", "AP-7.2.2-CONFIG-ONLY-FROM-MCP-JSON", "AP-8.2-EXTENSION-DIRECTORY"]
+        },
+        {
+          "text": "Treat missing component locations as valid absence.",
+          "rules": ["AP-6.2-MISSING-LOCATION-OK"]
+        },
+        {
+          "text": "Isolate invalid component types, skills, and MCP entries at their specified boundaries.",
+          "rules": ["AP-6.2-WRONG-KIND", "AP-7.1-INVALID-SKILL-SKIPPED", "AP-7.2.2-INVALID-CONFIG-DISABLES-MCP", "AP-7.2.2-ENTRY-ISOLATION", "AP-11.3-COMPONENT-FAILURE-ISOLATION", "AS-NAME-DIR-MISMATCH", "AS-NAME-MISSING", "AS-NAME-EMPTY", "AS-NAME-TOO-LONG", "AS-NAME-UPPERCASE", "AS-NAME-LEADING-HYPHEN", "AS-NAME-TRAILING-HYPHEN", "AS-NAME-DOUBLE-HYPHEN", "AS-DESCRIPTION-MISSING", "AS-DESCRIPTION-EMPTY", "AS-DESCRIPTION-TOO-LONG", "AS-FRONTMATTER-MISSING", "AS-FRONTMATTER-MALFORMED"]
+        },
+        {
+          "text": "Ignore unsupported component types and support at least one of skills or MCP servers.",
+          "rules": ["AP-7-IGNORE-UNSUPPORTED-TYPES", "AP-11.1-SUPPORT-ONE-COMPONENT-TYPE", "AP-11.3-UNSUPPORTED-IS-NOT-ERROR"]
+        }
+      ]
+    },
+    {
+      "heading": "MCP support",
+      "items": [
+        {
+          "text": "If MCP is implemented, support at least one of stdio and Streamable HTTP; support for both is recommended.",
+          "rules": ["AP-7.2.1-TRANSPORT-MINIMUM"]
+        },
+        {
+          "text": "Use each server entry's declared transport for the initial connection attempt.",
+          "rules": ["AP-7.2.1-TRANSPORT-DECLARED", "AP-7.2.2-UNSUPPORTED-TRANSPORT"]
+        },
+        {
+          "text": "Validate the closed top-level document and each server entry independently.",
+          "rules": ["AP-7.2.1-TOP-LEVEL-CLOSED", "AP-7.2.1-MCPSERVERS-OBJECT", "AP-7.2.1-MCP-SCHEMA-CANONICAL-VALUE", "AP-7.2.1-VARIANT-CLOSED", "AP-7.2.1-HEADER-VALID"]
+        },
+        {
+          "text": "Resolve stdio commands as single executable tokens.",
+          "rules": ["AP-7.2.1-COMMAND-SINGLE-TOKEN", "AP-7.2.1-COMMAND-NO-EXPANSION"]
+        },
+        {
+          "text": "Provide PLUGIN_ROOT and a dedicated persistent PLUGIN_DATA directory.",
+          "rules": ["AP-9.1-SUBPROCESS-VARIABLES"],
+          "coverage": "partial",
+          "why": "The load report describes what a client loaded, not what it puts in a subprocess environment. The fixture asserts the configuration is accepted; the client's own suite has to assert the variables arrive."
+        },
+        {
+          "text": "Expand only the two defined placeholders and only in args, env values, and cwd.",
+          "rules": ["AP-9.2-EXPANSION-SCOPE", "AP-9.2-LITERAL-UNKNOWN-PLACEHOLDER", "AP-9.2-RESERVED-ENV-NAMES", "AP-7.2.1-URL-NO-EXPANSION", "AP-7.2.1-COMMAND-NO-EXPANSION"],
+          "coverage": "partial",
+          "why": "Expansion in command and in url is observable, because an unexpanded value is invalid and an expanded one is not. Expansion inside args and env values is not: both forms load."
+        },
+        {
+          "text": "Enforce working-directory containment and remote URL/header requirements.",
+          "rules": ["AP-7.2.1-CWD-FORMS", "AP-7.2.1-CWD-CONTAINMENT", "AP-7.2.1-CWD-DEFAULT-PLUGIN-ROOT", "AP-7.2.1-URL-ABSOLUTE", "AP-7.2.1-URL-HTTPS", "AP-7.2.1-HEADER-CASE-DUPLICATE", "AP-7.2.1-HEADER-VALID"]
+        },
+        {
+          "text": "Continue loading after an independent MCP server fails.",
+          "rules": ["AP-7.2.2-CONNECT-FAILURE-NONFATAL", "AP-7.2.2-ENTRY-ISOLATION"]
+        }
+      ]
+    },
+    {
+      "heading": "Versioning",
+      "items": [
+        {
+          "text": "Require matching Agent Plugins versions in plugin.json and mcp.json.",
+          "rules": ["AP-10.1-MCP-VERSION-MATCH"]
+        },
+        {
+          "text": "Never reassign a published canonical schema identifier to different contents.",
+          "rules": ["AP-10.1-NO-IDENTIFIER-REUSE"],
+          "coverage": "partial",
+          "why": "This binds whoever publishes the schemas, not a client loading a plugin. Only the client-side half is testable: the published 1.0.0 identifiers must keep being accepted."
+        },
+        {
+          "text": "Allow plugins to continue targeting older versions according to locally supported compatibility policy.",
+          "rules": ["AP-10.1-OLDER-VERSIONS-ALLOWED", "AP-5.2-UNSUPPORTED-VERSION"],
+          "coverage": "partial",
+          "why": "Which older versions a client supports is local policy. This kit tests one version, so it can only assert that 1.0.0 loads and that an unrecognized version is rejected rather than silently downgraded."
+        }
+      ]
+    }
+  ]
+}

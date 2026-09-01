@@ -1,0 +1,4 @@
+{
+  "name": "condux",
+  "hooks": "./hooks/codex-hooks.json"
+}

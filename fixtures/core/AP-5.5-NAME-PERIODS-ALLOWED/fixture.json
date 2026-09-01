@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-5.5-NAME-PERIODS-ALLOWED",
+  "confidence": "core",
+  "spec": "5.5",
+  "title": "a plugin name containing periods loads",
+  "rationale": "Agent Plugins names allow periods where Agent Skills names do not. Reusing a skill-name validator here rejects \"acme.tools\".",
+  "quote": "Periods are allowed in plugin names.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

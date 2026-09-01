@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.2-OTHER-VIOLATION-FATAL",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "a non-string description is fatal",
+  "rationale": "Metadata fields are validated by JSON type even though their contents are not.",
+  "quote": "Any schema violation other than an unknown top-level field or a non-object `extensions` field is fatal: the client MUST reject the plugin and MUST NOT discover or execute any of its components.",
+  "observability": "report",
+  "expect": {
+    "rejected": "invalid-field-type",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

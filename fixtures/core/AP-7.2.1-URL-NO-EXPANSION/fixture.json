@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7.2.1-URL-NO-EXPANSION",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "placeholder-like text in a url and in headers stays literal",
+  "rationale": "Expansion is defined for args, env and cwd only. A client that expands a url here rewrites the endpoint a package declared.",
+  "quote": "Clients MUST NOT perform placeholder or environment-variable expansion in `url`, header names, or header values.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "literal"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

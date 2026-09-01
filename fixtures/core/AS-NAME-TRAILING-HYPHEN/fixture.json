@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-NAME-TRAILING-HYPHEN",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a skill name ending with a hyphen is skipped",
+  "rationale": "The mirror of the leading-hyphen case, and the one a start-anchored regex misses.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/trailing-",
+        "ruleId": "AS-NAME-TRAILING-HYPHEN"
+      }
+    ],
+    "reported": []
+  }
+}

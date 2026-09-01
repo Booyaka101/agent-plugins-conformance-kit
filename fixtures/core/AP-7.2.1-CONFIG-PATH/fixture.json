@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7.2.1-CONFIG-PATH",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "MCP configuration is read from mcp.json and nowhere else",
+  "rationale": "A .mcp.json and a config/mcp.json sit alongside the real one. Neither contributes a server.",
+  "quote": "The MCP configuration path is `mcp.json` at the plugin root. MCP configuration MUST NOT be declared inline in `plugin.json` or loaded from any alternative core path.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "real"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

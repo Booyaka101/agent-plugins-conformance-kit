@@ -1,0 +1,22 @@
+{
+  "ruleId": "AP-10.1-OLDER-VERSIONS-ALLOWED",
+  "confidence": "core",
+  "spec": "10.1",
+  "title": "matching 1.0.0 identifiers in both files load",
+  "rationale": "The positive control for version matching.",
+  "quote": "Existing plugins MAY continue targeting an older Agent Plugins version; clients determine support using the declared canonical identifiers and any explicit compatibility mappings.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": [
+        "api"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

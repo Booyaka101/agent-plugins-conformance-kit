@@ -1,0 +1,22 @@
+{
+  "ruleId": "AP-5.1-NO-ALTERNATE-MANIFEST",
+  "confidence": "core",
+  "spec": "5.1",
+  "title": "a root plugin.json alongside .codex-plugin/plugin.json",
+  "rationale": "Codex 0.149.0 routed any directory with a root plugin.json through the Agent Plugins loader, which has no hook support, so every hook declared in .codex-plugin/plugin.json stopped running silently. The portable manifest governs the portable components. It says nothing about client-specific files, and a client must not let its presence disable its own features. Both skills must load either way.",
+  "quote": "No other file can replace, supplement, or override the core fields in root `plugin.json`.",
+  "issue": "https://github.com/openai/codex/issues/39895",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "beta"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-FRONTMATTER-MISSING",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a SKILL.md with no frontmatter is skipped",
+  "rationale": "Frontmatter is required by the Agent Skills format.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/no-frontmatter",
+        "ruleId": "AS-FRONTMATTER-MISSING"
+      }
+    ],
+    "reported": []
+  }
+}

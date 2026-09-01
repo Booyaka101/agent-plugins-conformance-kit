@@ -1,0 +1,21 @@
+{
+  "ruleId": "AP-5.2-NO-SCHEMA-FETCH",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "loading does not depend on retrieving the schema",
+  "rationale": "A client that fetches plugin.schema.json cannot load a plugin offline or behind a proxy. Run this fixture with the network disabled to make the check bite.",
+  "quote": "Clients MUST NOT retrieve a schema while loading a plugin.",
+  "observability": "partial",
+  "observabilityNote": "The load report cannot observe network access. Run the suite offline (or with the adapter sandboxed) to turn this into a real assertion.",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

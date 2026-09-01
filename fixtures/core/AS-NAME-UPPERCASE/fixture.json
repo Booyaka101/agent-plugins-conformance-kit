@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-NAME-UPPERCASE",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a skill name containing uppercase characters is skipped",
+  "rationale": "The directory matches exactly, so only the character-set rule catches this.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/Uppercase",
+        "ruleId": "AS-NAME-UPPERCASE"
+      }
+    ],
+    "reported": []
+  }
+}

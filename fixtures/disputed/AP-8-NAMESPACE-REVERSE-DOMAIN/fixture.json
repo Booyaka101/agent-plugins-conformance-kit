@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-8-NAMESPACE-REVERSE-DOMAIN",
+  "confidence": "disputed",
+  "spec": "8",
+  "title": "an extensions namespace that is not reverse-domain",
+  "rationale": "The MUST is addressed to plugin authors and §8.1 assigns no client-side failure boundary for it, so clients differ on whether \"myclient\" is tolerated. This fixture records the choice.",
+  "quote": "Client-specific manifest data MUST be represented under a reverse-domain namespace in `extensions`.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

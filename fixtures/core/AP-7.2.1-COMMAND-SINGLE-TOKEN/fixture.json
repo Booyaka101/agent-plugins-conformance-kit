@@ -1,0 +1,31 @@
+{
+  "ruleId": "AP-7.2.1-COMMAND-SINGLE-TOKEN",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "a shell command string is not a single executable token",
+  "rationale": "Treating command as a shell string is both a conformance failure and an injection seam.",
+  "quote": "The `command` field MUST contain a single executable token, not a shell command string. It MUST be either a bare executable name or a plugin-relative path beginning with `./`.",
+  "observability": "partial",
+  "observabilityNote": "A command containing spaces but no separator is not distinguishable from a bare executable name whose name contains spaces. Clients that accept it are recorded rather than failed.",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#shelly",
+        "ruleId": "AP-7.2.1-COMMAND-SINGLE-TOKEN"
+      }
+    ],
+    "reported": []
+  },
+  "optional": {
+    "mcpServers": [
+      "shelly"
+    ]
+  }
+}

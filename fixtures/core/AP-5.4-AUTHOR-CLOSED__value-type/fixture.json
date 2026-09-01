@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.4-AUTHOR-CLOSED",
+  "confidence": "core",
+  "spec": "5.4",
+  "title": "a non-string value inside author is fatal",
+  "rationale": "\"each with a string value\" is part of the same sentence as the closed field list.",
+  "quote": "The `author` object MAY contain only the `name`, `email`, and `url` fields, each with a string value. Any other field or value type makes the manifest invalid.",
+  "observability": "report",
+  "expect": {
+    "rejected": "author-unknown-field",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

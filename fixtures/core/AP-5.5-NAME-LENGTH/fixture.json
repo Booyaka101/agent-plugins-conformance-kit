@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.5-NAME-LENGTH",
+  "confidence": "core",
+  "spec": "5.5",
+  "title": "a name longer than 64 characters rejects the plugin",
+  "rationale": "65 lowercase characters, valid in every other respect.",
+  "quote": "The name MUST be between 1 and 64 characters inclusive.",
+  "observability": "report",
+  "expect": {
+    "rejected": "name-length",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

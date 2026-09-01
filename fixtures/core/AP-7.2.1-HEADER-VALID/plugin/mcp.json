@@ -1,0 +1,16 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "numeric": {
+      "type": "streamable-http",
+      "url": "https://example.com/mcp",
+      "headers": {
+        "X-Retry": 3
+      }
+    },
+    "fine": {
+      "type": "streamable-http",
+      "url": "https://example.com/other"
+    }
+  }
+}

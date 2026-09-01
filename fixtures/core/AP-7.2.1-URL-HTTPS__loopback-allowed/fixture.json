@@ -1,0 +1,21 @@
+{
+  "ruleId": "AP-7.2.1-URL-HTTPS",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "plain HTTP to localhost and 127.0.0.1 is allowed",
+  "rationale": "Local development servers do not have certificates. A blanket https requirement breaks them.",
+  "quote": "Non-loopback endpoints MUST use HTTPS. HTTP MAY be used when the URL host is exactly `localhost` or an IP literal in a loopback range.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "named",
+        "numeric"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

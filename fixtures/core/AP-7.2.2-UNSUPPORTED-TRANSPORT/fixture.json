@@ -1,0 +1,27 @@
+{
+  "ruleId": "AP-7.2.2-UNSUPPORTED-TRANSPORT",
+  "confidence": "core",
+  "spec": "7.2.2",
+  "title": "an unsupported transport skips one entry, never the document",
+  "rationale": "Whether sse is supported is a client choice. Failing the whole document over it is not.",
+  "quote": "If the client does not support the transport declared by an otherwise valid server entry, it MUST skip that server and continue loading other servers and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": [
+        "current"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  },
+  "optional": {
+    "mcpServers": [
+      "legacy"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7.1-DEPTH",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a SKILL.md inside a valid skill's references/ is not a second skill",
+  "rationale": "A skill that documents skill authoring ships an example SKILL.md. It must stay an asset.",
+  "quote": "Clients MUST NOT recursively search deeper descendants for additional skills.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

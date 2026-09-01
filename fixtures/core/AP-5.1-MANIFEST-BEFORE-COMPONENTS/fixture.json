@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.1-MANIFEST-BEFORE-COMPONENTS",
+  "confidence": "core",
+  "spec": "5.1",
+  "title": "an invalid manifest stops discovery before any component is read",
+  "rationale": "The plugin ships three valid skills and a valid mcp.json. A client that discovers first and validates second will report them.",
+  "quote": "A client loads and validates root `plugin.json` before discovering components or applying client-specific behavior.",
+  "observability": "report",
+  "expect": {
+    "rejected": "required-field-missing",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

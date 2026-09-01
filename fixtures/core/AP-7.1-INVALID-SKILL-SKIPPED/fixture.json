@@ -1,0 +1,26 @@
+{
+  "ruleId": "AP-7.1-INVALID-SKILL-SKIPPED",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "an invalid skill is skipped and its siblings still load",
+  "rationale": "The isolation boundary for skills, with valid skills on both sides of the invalid one.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "gamma"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/broken",
+        "ruleId": "AS-DESCRIPTION-MISSING"
+      }
+    ],
+    "reported": []
+  }
+}

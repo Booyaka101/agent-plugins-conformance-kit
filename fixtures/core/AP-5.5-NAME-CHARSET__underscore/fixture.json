@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.5-NAME-CHARSET",
+  "confidence": "core",
+  "spec": "5.5",
+  "title": "an underscore in the plugin name rejects the plugin",
+  "rationale": "The permitted set is a-z, 0-9, hyphen and period. Underscore is the character most often assumed to be allowed.",
+  "quote": "Lowercase alphanumeric characters, hyphens, and periods only.",
+  "observability": "report",
+  "expect": {
+    "rejected": "name-charset",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.1-MANIFEST-LOCATION",
+  "confidence": "core",
+  "spec": "5.1",
+  "title": "the manifest is read from the plugin root, not from a nested directory",
+  "rationale": "A manifest one level down is not the plugin manifest, so the package has none.",
+  "quote": "Clients MUST check for a manifest at `plugin.json` in the plugin root.",
+  "observability": "report",
+  "expect": {
+    "rejected": "manifest-missing",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

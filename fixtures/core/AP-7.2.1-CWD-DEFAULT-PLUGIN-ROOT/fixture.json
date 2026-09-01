@@ -1,0 +1,21 @@
+{
+  "ruleId": "AP-7.2.1-CWD-DEFAULT-PLUGIN-ROOT",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "an stdio entry with no cwd loads",
+  "rationale": "Omitting cwd is the common case and defaults to the plugin root.",
+  "quote": "When `cwd` is omitted, clients MUST use the plugin root as the subprocess working directory.",
+  "observability": "partial",
+  "observabilityNote": "The load report shows the entry was accepted. It does not carry the resolved working directory, so the default value itself is not asserted here.",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "local"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

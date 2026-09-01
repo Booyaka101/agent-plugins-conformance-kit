@@ -1,0 +1,32 @@
+{
+  "ruleId": "AP-4.1-SYMLINK-INSIDE-ROOT",
+  "confidence": "disputed",
+  "spec": "4.1",
+  "title": "a skills/ entry linked to a target inside the plugin root",
+  "rationale": "§4.1 says such links MAY resolve. Following it and declining to follow it are both conformant, so this fixture records which a client does rather than grading it.",
+  "quote": "Symlinks, junctions, reparse points, and equivalent filesystem mechanisms MAY resolve to targets within the plugin root, but clients MUST reject package paths that resolve outside it.",
+  "observability": "report",
+  "links": [
+    {
+      "path": "skills/beta",
+      "target": "../../vendor/beta",
+      "type": "dir"
+    }
+  ],
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  },
+  "optional": {
+    "skills": [
+      "beta"
+    ]
+  }
+}

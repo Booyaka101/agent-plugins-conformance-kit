@@ -1,0 +1,34 @@
+{
+  "ruleId": "AP-6.1-NO-INLINE-CONFIG",
+  "confidence": "core",
+  "spec": "6.1",
+  "title": "inline component configuration in plugin.json is ignored",
+  "rationale": "The dotnet/skills#1087 shape in full: skills, agents and mcpServers all declared inline. Every one is an unknown field and none of them configures anything.",
+  "quote": "`plugin.json` cannot override these locations or contain inline component configuration.",
+  "issue": "https://github.com/dotnet/skills/issues/1087",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": [
+      {
+        "field": "skills",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      },
+      {
+        "field": "agents",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      },
+      {
+        "field": "mcpServers",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      }
+    ]
+  }
+}

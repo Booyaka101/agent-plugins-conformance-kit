@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "reserved": {
+      "type": "stdio",
+      "command": "node",
+      "env": {
+        "PLUGIN_ROOT": "/tmp/elsewhere"
+      }
+    },
+    "fine": {
+      "type": "stdio",
+      "command": "node",
+      "env": {
+        "DATA_DIR": "${PLUGIN_DATA}/cache"
+      }
+    }
+  }
+}

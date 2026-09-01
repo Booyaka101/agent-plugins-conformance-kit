@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "relative": {
+      "type": "stdio",
+      "command": "node",
+      "cwd": "./work"
+    },
+    "rootbare": {
+      "type": "stdio",
+      "command": "node",
+      "cwd": "${PLUGIN_ROOT}"
+    },
+    "rootsub": {
+      "type": "stdio",
+      "command": "node",
+      "cwd": "${PLUGIN_ROOT}/work"
+    },
+    "databare": {
+      "type": "stdio",
+      "command": "node",
+      "cwd": "${PLUGIN_DATA}"
+    },
+    "datasub": {
+      "type": "stdio",
+      "command": "node",
+      "cwd": "${PLUGIN_DATA}/cache"
+    }
+  }
+}

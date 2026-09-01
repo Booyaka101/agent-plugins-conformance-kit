@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
+  # The fixtures that need a symlink out of the plugin root only run here, so the
+  # reference-loader numbers in the README are the Linux ones.
+  reference-loader:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Run the suite against @kuralle-agents/plugins
+        run: node dist/cli.js run --adapter adapters/kuralle.mjs --json kuralle-report.json || true
+      - name: Check the result still matches what the README reports
+        run: node scripts/check-reference-result.mjs kuralle-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kuralle-report
+          path: kuralle-report.json
+
+  # The action has to be exercised, not just linted: it is the surface most users touch and
+  # the only one that cannot be covered by the test suite. It runs against the tarball
+  # built in this job, so a broken action.yml goes red before a release rather than after.
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm pack
+      - id: tarball
+        run: echo "path=$PWD/$(ls agent-plugins-conformance-kit-*.tgz)" >> "$GITHUB_OUTPUT"
+      - uses: ./
+        id: conformance
+        with:
+          adapter: ./examples/naive-adapter.mjs
+          package: ${{ steps.tarball.outputs.path }}
+          only: core
+          fixture: AP-5.2
+          junit: apconform-junit.xml
+          fail-on-error: 'false'
+      - name: The example loader is deliberately non-conformant, so it must fail
+        run: |
+          test "${{ steps.conformance.outputs.failed }}" -gt 0
+          test -s apconform-report.json
+          test -s apconform-junit.xml
+          echo "action produced ${{ steps.conformance.outputs.passed }} pass, ${{ steps.conformance.outputs.failed }} fail"
+
+  sources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run verify:sources
+
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      # Built explicitly rather than through prepack, because an npmrc with
+      # ignore-scripts=true would silently tarball a stale dist/.
+      - run: npm run build
+      - run: npm pack
+      - name: Install the tarball into a clean directory and run it
+        run: |
+          work="$(mktemp -d)"
+          cp agent-plugins-conformance-kit-*.tgz "$work/pkg.tgz"
+          cd "$work"
+          printf '{"name":"packcheck","version":"1.0.0","private":true}' > package.json
+          npm install ./pkg.tgz
+          ./node_modules/.bin/apconform verify
+          ./node_modules/.bin/apconform rules | tail -1

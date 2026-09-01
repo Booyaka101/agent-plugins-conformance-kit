@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Booyaka101/agent-plugins-conformance-kit/report.schema.json",
+  "title": "Agent Plugins conformance load report",
+  "description": "What an adapter prints to stdout after loading one plugin directory. See ADAPTERS.md.",
+  "type": "object",
+  "properties": {
+    "rejected": {
+      "description": "null when the plugin loaded. Otherwise a short reason. The runner compares null against non-null; the reason string itself is informational and is only echoed in failure output.",
+      "type": ["string", "null"]
+    },
+    "loaded": {
+      "type": "object",
+      "properties": {
+        "skills": {
+          "description": "Skill names, as the client would expose them. Order is not significant.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "mcpServers": {
+          "description": "MCP server names, the member names from mcp.json. Order is not significant.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["skills", "mcpServers"],
+      "additionalProperties": false
+    },
+    "skipped": {
+      "description": "Components dropped at a failure boundary. Reporting these is a SHOULD in the specification, so a mismatch here is a warning rather than a failure unless --strict-reporting is passed.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "what": {
+            "description": "skills/<dir> for a skill, mcp.json#<name> for one server entry, skills or mcp.json for a whole component type.",
+            "type": "string"
+          },
+          "ruleId": {
+            "description": "Optional. The kit's rule id if the client can map to one. A different id is noted, never failed.",
+            "type": "string"
+          }
+        },
+        "required": ["what"],
+        "additionalProperties": false
+      }
+    },
+    "reported": {
+      "description": "Fields the specification requires the client to report and ignore. Both cases (§5.2 unknown top-level field, §8.1 non-object extensions) are MUST report, so a mismatch here is a failure.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "description": "The manifest field name, for example \"skills\" or \"extensions\".",
+            "type": "string"
+          },
+          "ruleId": { "type": "string" }
+        },
+        "required": ["field"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["rejected", "loaded", "skipped", "reported"],
+  "additionalProperties": false
+}

@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-URL-HTTPS",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "plain HTTP to a non-loopback host is invalid",
+  "rationale": "Header values ride on this connection, so a cleartext remote endpoint is refused.",
+  "quote": "Non-loopback endpoints MUST use HTTPS. HTTP MAY be used when the URL host is exactly `localhost` or an IP literal in a loopback range.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#cleartext",
+        "ruleId": "AP-7.2.1-URL-HTTPS"
+      }
+    ],
+    "reported": []
+  }
+}

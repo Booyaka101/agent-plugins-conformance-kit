@@ -1,0 +1,19 @@
+{
+  "name": "dotnet-msbuild",
+  "version": "1.0.0",
+  "description": "MSBuild skills for .NET projects.",
+  "skills": [
+    "./skills/msbuild-diagnostics"
+  ],
+  "agents": [
+    {
+      "name": "build-reviewer"
+    }
+  ],
+  "mcpServers": {
+    "roslyn": {
+      "type": "stdio",
+      "command": "dotnet"
+    }
+  }
+}

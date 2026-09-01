@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-10.1-MCP-VERSION-MATCH",
+  "confidence": "core",
+  "spec": "10.1",
+  "title": "an mcp.json targeting a different version than plugin.json disables MCP",
+  "rationale": "Both identifiers are well formed and each is individually plausible. Only comparing them catches this, and the failure boundary is MCP alone.",
+  "quote": "When `mcp.json` is present, the version in its `$schema` value MUST match the version declared by `plugin.json`. A mismatch makes the MCP configuration invalid under §7.2.2 but does not invalidate other component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "mcp.json",
+        "ruleId": "AP-10.1-MCP-VERSION-MATCH"
+      }
+    ],
+    "reported": []
+  }
+}

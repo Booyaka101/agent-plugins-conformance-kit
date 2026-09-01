@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "dupes": {
+      "type": "streamable-http",
+      "url": "https://example.com/mcp",
+      "headers": {
+        "X-Tenant": "a",
+        "x-tenant": "b"
+      }
+    },
+    "fine": {
+      "type": "streamable-http",
+      "url": "https://example.com/other",
+      "headers": {
+        "X-Tenant": "a"
+      }
+    }
+  }
+}

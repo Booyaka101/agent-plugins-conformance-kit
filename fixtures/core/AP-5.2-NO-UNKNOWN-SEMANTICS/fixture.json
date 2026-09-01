@@ -1,0 +1,26 @@
+{
+  "ruleId": "AP-5.2-NO-UNKNOWN-SEMANTICS",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "a top-level \"skills\" array does not produce skills",
+  "rationale": "This is the dotnet/skills#1087 manifest shape. The unknown field must be reported and ignored, and the skill named in it must not be loaded from anywhere but skills/.",
+  "quote": "Clients MUST NOT assign semantics to unknown fields.",
+  "issue": "https://github.com/dotnet/skills/issues/1087",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": [
+      {
+        "field": "skills",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-NAME-MISSING",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a skill with no frontmatter name is skipped",
+  "rationale": "name is required.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/nameless",
+        "ruleId": "AS-NAME-MISSING"
+      }
+    ],
+    "reported": []
+  }
+}

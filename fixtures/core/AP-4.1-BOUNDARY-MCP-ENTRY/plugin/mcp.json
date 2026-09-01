@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "escaping": {
+      "type": "stdio",
+      "command": "../bin/server"
+    },
+    "fine": {
+      "type": "stdio",
+      "command": "./bin/server"
+    }
+  }
+}

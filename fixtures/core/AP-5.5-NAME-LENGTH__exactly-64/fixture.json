@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-5.5-NAME-LENGTH",
+  "confidence": "core",
+  "spec": "5.5",
+  "title": "a name of exactly 64 characters loads",
+  "rationale": "The range is inclusive. An off-by-one here rejects a legal package.",
+  "quote": "The name MUST be between 1 and 64 characters inclusive.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

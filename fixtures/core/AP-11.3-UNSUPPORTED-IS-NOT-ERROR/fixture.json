@@ -1,0 +1,27 @@
+{
+  "ruleId": "AP-11.3-UNSUPPORTED-IS-NOT-ERROR",
+  "confidence": "core",
+  "spec": "11.3",
+  "title": "unsupported component types, transports and extensions are not errors",
+  "rationale": "An sse server, an unimplemented namespace and an out-of-v1 component directory together. None of them is a failure.",
+  "quote": "Clients MAY report partially unsupported plugins, but lack of support for a component type, MCP transport, or client extension is not itself an error.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": [
+        "current"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  },
+  "optional": {
+    "mcpServers": [
+      "legacy"
+    ]
+  }
+}

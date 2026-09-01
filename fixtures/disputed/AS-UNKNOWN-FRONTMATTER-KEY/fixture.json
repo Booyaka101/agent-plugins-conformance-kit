@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-UNKNOWN-FRONTMATTER-KEY",
+  "confidence": "disputed",
+  "spec": "7.1",
+  "title": "a skill carrying frontmatter keys outside the documented set",
+  "rationale": "oh-my-pi 17.3.5 dropped 30 of 33 skills over exactly this. Agent Skills lists its fields without saying the set is closed, so strict and lenient clients both have a case. This fixture records which a client is.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "issue": "https://github.com/can1357/oh-my-pi/issues/8853",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  },
+  "optional": {
+    "skills": [
+      "extra-keys"
+    ]
+  }
+}

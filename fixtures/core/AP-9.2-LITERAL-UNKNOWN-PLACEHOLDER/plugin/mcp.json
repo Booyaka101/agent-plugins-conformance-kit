@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "literal": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "--home",
+        "$HOME",
+        "--braced",
+        "${HOME}",
+        "--unknown",
+        "${PLUGIN_CACHE}"
+      ],
+      "env": {
+        "HOME_COPY": "$HOME",
+        "CACHE": "${PLUGIN_CACHE}"
+      }
+    }
+  }
+}

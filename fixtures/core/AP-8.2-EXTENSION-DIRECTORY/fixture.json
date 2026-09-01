@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-8.2-EXTENSION-DIRECTORY",
+  "confidence": "core",
+  "spec": "8.2",
+  "title": "a top-level extension directory does not affect the load",
+  "rationale": "Reverse-domain directories sit next to skills/ and mcp.json. They are not component locations.",
+  "quote": "The extension directory for a namespace is the top-level directory named after it.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

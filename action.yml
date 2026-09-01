@@ -1,0 +1,142 @@
+name: Agent Plugins conformance
+description: Run the Agent Plugins 1.0.0 conformance suite against your client loader via an adapter script.
+author: Booyaka101
+branding:
+  icon: check-square
+  color: purple
+
+inputs:
+  adapter:
+    description: Path to the adapter executable. It takes a plugin directory as argv[2] and prints a load report to stdout.
+    required: true
+  only:
+    description: Fixture groups to run - core, disputed, regressions, or all. Comma-separated.
+    required: false
+    default: all
+  fixture:
+    description: Run only fixtures whose id contains this text.
+    required: false
+    default: ''
+  strict-reporting:
+    description: Treat SHOULD-report mismatches in "skipped" as failures.
+    required: false
+    default: 'false'
+  timeout:
+    description: Per-fixture adapter timeout in milliseconds.
+    required: false
+    default: '30000'
+  baseline:
+    description: Gate on change instead of on the total. Only fixtures that regressed against this file fail the step.
+    required: false
+    default: ''
+  update-baseline:
+    description: Write the current result to the baseline file and pass.
+    required: false
+    default: 'false'
+  json:
+    description: Path to write the machine-readable result to.
+    required: false
+    default: apconform-report.json
+  junit:
+    description: Path to write JUnit XML to, for CI systems that render test reports.
+    required: false
+    default: ''
+  version:
+    description: Version of agent-plugins-conformance-kit to run.
+    required: false
+    default: latest
+  package:
+    description: An npm spec to run instead of the published package, such as an absolute path to a packed tarball. Overrides version. Mainly for testing this action.
+    required: false
+    default: ''
+  fail-on-error:
+    description: Fail the step when a fixture fails. Set to false to report without gating.
+    required: false
+    default: 'true'
+
+outputs:
+  report:
+    description: Path to the JSON report.
+    value: ${{ steps.run.outputs.report }}
+  passed:
+    description: Number of fixtures that passed.
+    value: ${{ steps.run.outputs.passed }}
+  failed:
+    description: Number of fixtures that failed.
+    value: ${{ steps.run.outputs.failed }}
+
+runs:
+  using: composite
+  steps:
+    - name: Run the conformance suite
+      id: run
+      shell: bash
+      env:
+        APCONFORM_ADAPTER: ${{ inputs.adapter }}
+        APCONFORM_ONLY: ${{ inputs.only }}
+        APCONFORM_FIXTURE: ${{ inputs.fixture }}
+        APCONFORM_STRICT: ${{ inputs.strict-reporting }}
+        APCONFORM_TIMEOUT: ${{ inputs.timeout }}
+        APCONFORM_JSON: ${{ inputs.json }}
+        APCONFORM_JUNIT: ${{ inputs.junit }}
+        APCONFORM_BASELINE: ${{ inputs.baseline }}
+        APCONFORM_UPDATE_BASELINE: ${{ inputs.update-baseline }}
+        APCONFORM_VERSION: ${{ inputs.version }}
+        APCONFORM_PACKAGE: ${{ inputs.package }}
+        APCONFORM_FAIL: ${{ inputs.fail-on-error }}
+      run: |
+        set -o pipefail
+
+        # npx resolves a bin against the current directory first, so run from a scratch
+        # directory and pass absolute paths. Inside a checkout that happens to contain a
+        # package of the same name, the local one would otherwise shadow the published one.
+        work="$(mktemp -d)"
+        # npx roots a relative spec at the nearest ancestor manifest, so give it one here.
+        printf '{"name":"apconform-run","version":"1.0.0","private":true}' > "$work/package.json"
+        adapter_abs="$(cd "$(dirname "$APCONFORM_ADAPTER")" && pwd)/$(basename "$APCONFORM_ADAPTER")"
+        json_abs="$GITHUB_WORKSPACE/$APCONFORM_JSON"
+
+        args=(run --adapter "$adapter_abs" --only "$APCONFORM_ONLY"
+              --timeout "$APCONFORM_TIMEOUT" --json "$json_abs")
+        [ -n "$APCONFORM_FIXTURE" ] && args+=(--fixture "$APCONFORM_FIXTURE")
+        [ "$APCONFORM_STRICT" = "true" ] && args+=(--strict-reporting)
+        [ -n "$APCONFORM_JUNIT" ] && args+=(--junit "$GITHUB_WORKSPACE/$APCONFORM_JUNIT")
+        if [ -n "$APCONFORM_BASELINE" ]; then
+          args+=(--baseline "$GITHUB_WORKSPACE/$APCONFORM_BASELINE")
+          [ "$APCONFORM_UPDATE_BASELINE" = "true" ] && args+=(--update-baseline)
+        fi
+
+        spec="agent-plugins-conformance-kit@$APCONFORM_VERSION"
+        if [ -n "$APCONFORM_PACKAGE" ]; then
+          spec="$APCONFORM_PACKAGE"
+          # Given an absolute path to a tarball, npx can exit 0 having done nothing at all.
+          # Copying it in and running the relative spec works on every platform.
+          if [ -f "$APCONFORM_PACKAGE" ]; then
+            cp "$APCONFORM_PACKAGE" "$work/local-package.tgz"
+            spec="./local-package.tgz"
+          fi
+        fi
+
+        status=0
+        ( cd "$work" && npx --yes "$spec" "${args[@]}" ) \
+          | tee "$RUNNER_TEMP/apconform.log" || status=$?
+
+        {
+          printf '## Agent Plugins conformance\n\n```\n'
+          tail -n 20 "$RUNNER_TEMP/apconform.log"
+          printf '```\n'
+        } >> "$GITHUB_STEP_SUMMARY"
+
+        passed=$(grep -oE '^total +[0-9]+ pass' "$RUNNER_TEMP/apconform.log" | grep -oE '[0-9]+' | head -1)
+        failed=$(grep -oE '[0-9]+ fail' "$RUNNER_TEMP/apconform.log" | tail -1 | grep -oE '[0-9]+')
+        {
+          echo "report=$json_abs"
+          echo "passed=${passed:-0}"
+          echo "failed=${failed:-0}"
+        } >> "$GITHUB_OUTPUT"
+
+        if [ "$status" -ne 0 ] && [ "$APCONFORM_FAIL" != "true" ]; then
+          echo "conformance failures found; fail-on-error is false so the step passes"
+          exit 0
+        fi
+        exit "$status"

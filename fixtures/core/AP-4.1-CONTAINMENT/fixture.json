@@ -1,0 +1,22 @@
+{
+  "ruleId": "AP-4.1-CONTAINMENT",
+  "confidence": "core",
+  "spec": "4.1",
+  "title": "a plugin whose every path stays inside the root loads",
+  "rationale": "The control for the four boundary fixtures. A client that over-enforces containment fails here.",
+  "quote": "When a client discovers, reads, or executes a file or directory supplied by the plugin package, the filesystem-resolved path MUST remain within the filesystem-resolved plugin root.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": [
+        "local"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

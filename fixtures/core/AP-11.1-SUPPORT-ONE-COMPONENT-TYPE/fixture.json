@@ -1,0 +1,30 @@
+{
+  "ruleId": "AP-11.1-SUPPORT-ONE-COMPONENT-TYPE",
+  "confidence": "core",
+  "spec": "11.1",
+  "title": "a plugin with both component types loads at least one of them",
+  "rationale": "A skills-only or MCP-only client conforms. A client that loads neither does not.",
+  "quote": "Supports at least one component type (skills or MCP servers).",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": [
+        "api"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  },
+  "atLeastOne": {
+    "skills": [
+      "alpha"
+    ],
+    "mcpServers": [
+      "api"
+    ]
+  }
+}

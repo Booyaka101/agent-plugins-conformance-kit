@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-8.1-IGNORE-UNIMPLEMENTED-NAMESPACE",
+  "confidence": "core",
+  "spec": "8.1",
+  "title": "an unimplemented namespace is ignored without validating its contents",
+  "rationale": "The namespace holds a deliberately absurd payload. A client that validates it will complain about a namespace it does not own.",
+  "quote": "A client MUST ignore manifest entries for namespaces it does not implement without validating the contents of their values.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

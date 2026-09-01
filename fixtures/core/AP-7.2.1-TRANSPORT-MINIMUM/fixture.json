@@ -1,0 +1,30 @@
+{
+  "ruleId": "AP-7.2.1-TRANSPORT-MINIMUM",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "stdio and streamable-http entries load side by side",
+  "rationale": "Both mandatory-capable transports in one document. A client supporting only one skips the other rather than failing.",
+  "quote": "A client that supports Agent Plugins MCP servers MUST support at least one of `stdio` or `streamable-http` and SHOULD support both. Support for `sse` is OPTIONAL.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "local",
+        "remote"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  },
+  "optional": {
+    "mcpServers": []
+  },
+  "atLeastOne": {
+    "mcpServers": [
+      "local",
+      "remote"
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.2-UNSUPPORTED-VERSION",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "a well-formed identifier for an unsupported version rejects the plugin",
+  "rationale": "The value is shaped exactly like the canonical one but names a version this kit targets no client for.",
+  "quote": "If a client does not support the declared Agent Plugins version or an explicitly recognized compatible version, it MUST reject the plugin and SHOULD report the unsupported version.",
+  "observability": "report",
+  "expect": {
+    "rejected": "unsupported-schema-version",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

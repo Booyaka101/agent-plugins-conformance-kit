@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-TOP-LEVEL-CLOSED",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "mcp.json with no mcpServers disables MCP",
+  "rationale": "mcpServers is required. An empty object is the way to say \"no servers\".",
+  "quote": "`mcp.json` MUST be a JSON object containing the required `$schema` and `mcpServers` fields, with no other top-level fields.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "mcp.json",
+        "ruleId": "AP-7.2.1-TOP-LEVEL-CLOSED"
+      }
+    ],
+    "reported": []
+  }
+}

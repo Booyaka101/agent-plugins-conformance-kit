@@ -1,0 +1,26 @@
+{
+  "ruleId": "AP-7.1-IMMEDIATE-CHILD",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a file named skill.md is not SKILL.md",
+  "rationale": "The name is \"exactly SKILL.md\". On a case-insensitive filesystem a client that matches loosely will disagree with one that does not.",
+  "quote": "Each immediate child directory containing a path named exactly `SKILL.md` that resolves to a regular file is treated as one skill.",
+  "observability": "partial",
+  "observabilityNote": "A case-insensitive filesystem cannot distinguish the two names, so beta is accepted either way. On a case-sensitive filesystem only alpha is conformant.",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  },
+  "optional": {
+    "skills": [
+      "beta"
+    ]
+  }
+}

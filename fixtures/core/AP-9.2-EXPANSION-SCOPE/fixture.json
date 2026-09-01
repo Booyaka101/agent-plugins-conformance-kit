@@ -1,0 +1,21 @@
+{
+  "ruleId": "AP-9.2-EXPANSION-SCOPE",
+  "confidence": "core",
+  "spec": "9.2",
+  "title": "placeholders in args, env values and cwd load; env keys are left alone",
+  "rationale": "The three expansion sites in one entry, plus an env key that looks like a placeholder and must not be treated as one.",
+  "quote": "Expansion applies to every string element of `args`, every string value in `env`, and the `cwd` string. It does not apply to `env` keys, `command`, or fixed component locations.",
+  "observability": "partial",
+  "observabilityNote": "The load report records that the entry was accepted. The expanded values themselves are subprocess state, outside this contract.",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "expanding"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

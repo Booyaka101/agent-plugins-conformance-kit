@@ -1,0 +1,22 @@
+{
+  "ruleId": "AP-6.1-FIXED-LOCATIONS",
+  "confidence": "core",
+  "spec": "6.1",
+  "title": "skills come from skills/ and MCP servers from mcp.json",
+  "rationale": "The baseline both-component-types plugin. Directories with skill-like names elsewhere are not skills.",
+  "quote": "Clients MUST discover each supported component type from its fixed location.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": [
+        "api"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-NAME-DOUBLE-HYPHEN",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a skill name containing consecutive hyphens is skipped",
+  "rationale": "Consecutive hyphens are called out explicitly by the Agent Skills specification.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/double--hyphen",
+        "ruleId": "AS-NAME-DOUBLE-HYPHEN"
+      }
+    ],
+    "reported": []
+  }
+}

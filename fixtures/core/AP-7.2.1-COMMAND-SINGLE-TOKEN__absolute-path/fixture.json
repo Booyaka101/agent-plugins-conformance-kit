@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-COMMAND-SINGLE-TOKEN",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "an absolute command path is neither a bare name nor plugin-relative",
+  "rationale": "An absolute path pins the package to one machine and is outside the two permitted forms.",
+  "quote": "The `command` field MUST contain a single executable token, not a shell command string. It MUST be either a bare executable name or a plugin-relative path beginning with `./`.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#absolute",
+        "ruleId": "AP-7.2.1-COMMAND-SINGLE-TOKEN"
+      }
+    ],
+    "reported": []
+  }
+}

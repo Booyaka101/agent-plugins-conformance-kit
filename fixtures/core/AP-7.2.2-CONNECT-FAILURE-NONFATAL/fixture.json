@@ -1,0 +1,23 @@
+{
+  "ruleId": "AP-7.2.2-CONNECT-FAILURE-NONFATAL",
+  "confidence": "core",
+  "spec": "7.2.2",
+  "title": "a server that cannot possibly start is still valid configuration",
+  "rationale": "Validity is a property of the configuration. Whether the executable exists is discovered later, and it is not a load error.",
+  "quote": "If a server fails to start, connect, authenticate, or complete the MCP handshake, the client MUST continue loading other servers and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": [
+        "missing",
+        "unreachable"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

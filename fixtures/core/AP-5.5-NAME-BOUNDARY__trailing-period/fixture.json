@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.5-NAME-BOUNDARY",
+  "confidence": "core",
+  "spec": "5.5",
+  "title": "a trailing period in the plugin name rejects the plugin",
+  "rationale": "Periods are legal inside a name but the last character must be alphanumeric.",
+  "quote": "The first and last characters MUST be alphanumeric.",
+  "observability": "report",
+  "expect": {
+    "rejected": "name-boundary",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

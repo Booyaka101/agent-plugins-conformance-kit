@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-HEADER-VALID",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "a non-string header value is invalid",
+  "rationale": "headers is an object of strings. A number here would be serialized by the client, not by the plugin.",
+  "quote": "Header names and values MUST be valid HTTP header fields.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#numeric",
+        "ruleId": "AP-7.2.1-HEADER-VALID"
+      }
+    ],
+    "reported": []
+  }
+}

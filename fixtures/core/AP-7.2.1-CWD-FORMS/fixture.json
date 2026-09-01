@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-CWD-FORMS",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "a cwd of \"../escape\" is not a permitted form",
+  "rationale": "Neither ./-prefixed nor rooted at a placeholder, and it escapes on resolution.",
+  "quote": "Any other form or any post-resolution escape makes that server entry invalid under §7.2.2.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#escaping",
+        "ruleId": "AP-7.2.1-CWD-FORMS"
+      }
+    ],
+    "reported": []
+  }
+}

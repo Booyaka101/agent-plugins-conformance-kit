@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-NAME-TOO-LONG",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a skill name longer than 64 characters is skipped",
+  "rationale": "65 characters, matching the directory, valid in every other respect.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "ruleId": "AS-NAME-TOO-LONG"
+      }
+    ],
+    "reported": []
+  }
+}

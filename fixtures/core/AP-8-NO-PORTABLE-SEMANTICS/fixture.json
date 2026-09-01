@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-8-NO-PORTABLE-SEMANTICS",
+  "confidence": "core",
+  "spec": "8",
+  "title": "an empty extensions object is valid",
+  "rationale": "Nothing about extensions is required, including having any namespaces in it.",
+  "quote": "Agent Plugins assigns no portable discovery, validation, loading, or failure semantics to client extension data or files.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

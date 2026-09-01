@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-9.2-RESERVED-ENV-NAMES",
+  "confidence": "core",
+  "spec": "9.2",
+  "title": "an env entry named PLUGIN_DATA invalidates that server entry",
+  "rationale": "Both names are reserved. A client checking only PLUGIN_ROOT misses half the rule.",
+  "quote": "An MCP server's `env` object MUST NOT contain entries named `PLUGIN_ROOT` or `PLUGIN_DATA`. Such an entry makes that server configuration invalid under §7.2.2.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#reserved",
+        "ruleId": "AP-9.2-RESERVED-ENV-NAMES"
+      }
+    ],
+    "reported": []
+  }
+}

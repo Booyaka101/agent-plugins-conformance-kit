@@ -1,0 +1,24 @@
+{
+  "ruleId": "AP-7.2.1-CWD-FORMS",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "all three permitted cwd forms load",
+  "rationale": "The positive control: ./work, ${PLUGIN_ROOT} bare, ${PLUGIN_ROOT}/sub, ${PLUGIN_DATA} bare and ${PLUGIN_DATA}/sub.",
+  "quote": "Any other form or any post-resolution escape makes that server entry invalid under §7.2.2.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "relative",
+        "rootbare",
+        "rootsub",
+        "databare",
+        "datasub"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

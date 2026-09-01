@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-TRANSPORT-DECLARED",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "an sse entry is a distinct transport, not a streamable-http variant",
+  "rationale": "sse support is OPTIONAL, so loading it and skipping it are both conformant. What is not conformant is treating it as streamable-http or failing the document.",
+  "quote": "A client MUST use the transport declared by `type` for its initial connection attempt.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "current"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  },
+  "optional": {
+    "mcpServers": [
+      "legacy"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-4.1-OPAQUE-VALUES",
+  "confidence": "core",
+  "spec": "4.1",
+  "title": "args and env values that look like escaping paths are opaque strings",
+  "rationale": "Enforcing containment on argument values would break every server that passes a path it manages itself.",
+  "quote": "Configuration values not defined as paths, including command arguments and environment variable values, are opaque strings. Clients MUST NOT interpret them as package paths for the purpose of enforcing this section.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "opaque"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

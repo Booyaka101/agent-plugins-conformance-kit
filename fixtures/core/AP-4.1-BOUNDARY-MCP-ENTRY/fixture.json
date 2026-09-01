@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-4.1-BOUNDARY-MCP-ENTRY",
+  "confidence": "core",
+  "spec": "4.1",
+  "title": "an stdio command escaping the plugin root invalidates that entry only",
+  "rationale": "Boundary rule 4 in §4.1. The sibling server is untouched.",
+  "quote": "If an MCP server `command` or `cwd` fails containment, the client MUST treat that server entry as invalid under §7.2.2.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#escaping",
+        "ruleId": "AP-4.1-BOUNDARY-MCP-ENTRY"
+      }
+    ],
+    "reported": []
+  }
+}

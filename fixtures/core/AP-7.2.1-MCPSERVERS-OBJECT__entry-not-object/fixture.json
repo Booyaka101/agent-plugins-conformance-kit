@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-MCPSERVERS-OBJECT",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "a server entry that is not an object is skipped",
+  "rationale": "Member values are server configuration objects. A string is not one, and its siblings are unaffected.",
+  "quote": "`mcpServers` MUST be an object whose member names identify servers and whose member values are server configuration objects. An empty `mcpServers` object is valid.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#broken",
+        "ruleId": "AP-7.2.1-MCPSERVERS-OBJECT"
+      }
+    ],
+    "reported": []
+  }
+}

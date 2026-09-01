@@ -1,0 +1,37 @@
+{
+  "ruleId": "AP-11.3-COMPONENT-FAILURE-ISOLATION",
+  "confidence": "core",
+  "spec": "11.3",
+  "title": "a plugin broken in four independent places still loads everything valid",
+  "rationale": "One invalid skill, one skill nested too deep, one invalid MCP entry and one unknown manifest field, all at once. Isolation has to hold together, not one boundary at a time.",
+  "quote": "A failure isolated to a component type, component entry, or component process MUST NOT prevent the client from loading independently valid components.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": [
+        "good"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "skills/broken",
+        "ruleId": "AS-NAME-DIR-MISMATCH"
+      },
+      {
+        "what": "mcp.json#bad",
+        "ruleId": "AP-7.2.1-CWD-FORMS"
+      }
+    ],
+    "reported": [
+      {
+        "field": "hooks",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      }
+    ]
+  }
+}

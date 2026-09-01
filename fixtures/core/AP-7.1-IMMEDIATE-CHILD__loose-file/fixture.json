@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7.1-IMMEDIATE-CHILD",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a SKILL.md directly inside skills/ is not a skill",
+  "rationale": "The unit of discovery is a directory. A loose SKILL.md has no directory name to match against.",
+  "quote": "Each immediate child directory containing a path named exactly `SKILL.md` that resolves to a regular file is treated as one skill.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "ruleId": "AP-5.2-UNKNOWN-FIELD",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "every unknown top-level field is reported, not just the first",
+  "rationale": "§5.2 says \"each unknown field\". A client that reports one and stops has not satisfied it.",
+  "quote": "Clients MUST report and ignore each unknown field and MUST continue loading the plugin if the manifest otherwise satisfies this section.",
+  "issue": "https://github.com/agentplugins/agent-plugins-spec/issues/77",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": [
+      {
+        "field": "hooks",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      },
+      {
+        "field": "agents",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      },
+      {
+        "field": "commands",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      }
+    ]
+  }
+}

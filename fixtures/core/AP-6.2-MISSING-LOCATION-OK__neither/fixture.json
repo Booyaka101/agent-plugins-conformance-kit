@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-6.2-MISSING-LOCATION-OK",
+  "confidence": "core",
+  "spec": "6.2",
+  "title": "a manifest-only plugin loads with no components",
+  "rationale": "Both fixed locations absent. Valid, and it loads nothing.",
+  "quote": "If a fixed component location is absent, the client MUST NOT treat that as an error.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "ruleId": "AP-10.1-NO-IDENTIFIER-REUSE",
+  "confidence": "core",
+  "spec": "10.1",
+  "title": "the canonical 1.0.0 identifiers are accepted as published",
+  "rationale": "The client-side half of the identifier-stability rule: the published 1.0.0 identifiers must keep working. Whether they are ever reassigned is a registry property this suite cannot test.",
+  "quote": "Published canonical schema identifiers MUST NOT be reassigned to different schema contents.",
+  "observability": "partial",
+  "observabilityNote": "Identifier stability is a property of the publisher, not of a client load. Only the accept-the-published-identifier half is asserted.",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": [
+        "api"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

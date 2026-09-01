@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-TOP-LEVEL-CLOSED",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "mcp.json with no $schema disables MCP",
+  "rationale": "$schema is required in mcp.json exactly as it is in plugin.json, and the failure boundary is the component type.",
+  "quote": "`mcp.json` MUST be a JSON object containing the required `$schema` and `mcpServers` fields, with no other top-level fields.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "mcp.json",
+        "ruleId": "AP-7.2.1-TOP-LEVEL-CLOSED"
+      }
+    ],
+    "reported": []
+  }
+}

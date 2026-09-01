@@ -1,0 +1,26 @@
+{
+  "ruleId": "AP-8.1-EXTENSIONS-NOT-OBJECT",
+  "confidence": "core",
+  "spec": "8.1",
+  "title": "an array extensions field is reported and ignored",
+  "rationale": "An array is a JSON object in neither the spec's sense nor a validator's. The outcome is the same as for a string.",
+  "quote": "If `extensions` is not an object, the client MUST report and ignore the field and continue loading components.",
+  "issue": "https://github.com/agentplugins/agent-plugins-spec/issues/77",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": [
+      {
+        "field": "extensions",
+        "ruleId": "AP-8.1-EXTENSIONS-NOT-OBJECT"
+      }
+    ]
+  }
+}

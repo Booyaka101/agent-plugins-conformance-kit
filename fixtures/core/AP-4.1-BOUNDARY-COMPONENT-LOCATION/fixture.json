@@ -1,0 +1,32 @@
+{
+  "ruleId": "AP-4.1-BOUNDARY-COMPONENT-LOCATION",
+  "confidence": "core",
+  "spec": "4.1",
+  "title": "a skills/ location linked outside the plugin root invalidates the component type",
+  "rationale": "Boundary rule 2 in §4.1. The whole location is invalid, and MCP must still load.",
+  "quote": "If a fixed component location does not resolve within the plugin root, the client MUST treat that component type as invalid under §6.2.",
+  "observability": "report",
+  "links": [
+    {
+      "path": "skills",
+      "target": "../outside/skills",
+      "type": "dir"
+    }
+  ],
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "api"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "skills",
+        "ruleId": "AP-4.1-BOUNDARY-COMPONENT-LOCATION"
+      }
+    ],
+    "reported": []
+  }
+}

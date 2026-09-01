@@ -1,0 +1,22 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "first": {
+      "type": "stdio",
+      "command": "node"
+    },
+    "second": {
+      "type": "streamable-http",
+      "url": "https://example.com/two"
+    },
+    "broken": {
+      "type": "stdio",
+      "command": "node",
+      "url": "https://example.com/broken"
+    },
+    "fourth": {
+      "type": "streamable-http",
+      "url": "https://example.com/four"
+    }
+  }
+}

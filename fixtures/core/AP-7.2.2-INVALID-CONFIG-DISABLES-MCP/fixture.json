@@ -1,0 +1,27 @@
+{
+  "ruleId": "AP-7.2.2-INVALID-CONFIG-DISABLES-MCP",
+  "confidence": "core",
+  "spec": "7.2.2",
+  "title": "a malformed mcp.json disables MCP without touching skills",
+  "rationale": "The component-type boundary, with three valid skills proving the rest of the load survived.",
+  "quote": "the client MUST disable MCP for that plugin and continue loading other component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "beta",
+        "gamma"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "mcp.json",
+        "ruleId": "AP-7.2.2-INVALID-CONFIG-DISABLES-MCP"
+      }
+    ],
+    "reported": []
+  }
+}

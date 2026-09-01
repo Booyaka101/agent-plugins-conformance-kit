@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-HEADER-CASE-DUPLICATE",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "the same header name under two casings is invalid",
+  "rationale": "Header names are case-insensitive, so the entry declares one header twice with two values and there is no rule for picking.",
+  "quote": "Header names are case-insensitive; an entry containing the same header name more than once under different casing is invalid.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#dupes",
+        "ruleId": "AP-7.2.1-HEADER-CASE-DUPLICATE"
+      }
+    ],
+    "reported": []
+  }
+}

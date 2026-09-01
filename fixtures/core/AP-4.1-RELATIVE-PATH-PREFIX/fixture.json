@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-4.1-RELATIVE-PATH-PREFIX",
+  "confidence": "core",
+  "spec": "4.1",
+  "title": "a plugin-relative path missing its ./ prefix is not a plugin-relative path",
+  "rationale": "A bare \"bin/server\" contains a separator so it is not a bare executable name, and it does not begin with ./ so it is not plugin-relative. The entry is invalid.",
+  "quote": "A configuration field defined by this specification as a plugin-relative path MUST begin with `./`, be resolved against the plugin root, and remain within the filesystem-resolved plugin root after resolution.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "prefixed"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#unprefixed",
+        "ruleId": "AP-4.1-RELATIVE-PATH-PREFIX"
+      }
+    ],
+    "reported": []
+  }
+}

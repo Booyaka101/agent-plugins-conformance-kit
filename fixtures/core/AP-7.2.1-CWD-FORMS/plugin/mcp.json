@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "escaping": {
+      "type": "stdio",
+      "command": "node",
+      "cwd": "../escape"
+    },
+    "fine": {
+      "type": "stdio",
+      "command": "node",
+      "cwd": "./work"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "ruleId": "AS-UNKNOWN-FRONTMATTER-KEY",
+  "confidence": "disputed",
+  "spec": "7.1",
+  "title": "strict frontmatter validation dropping 30 of 33 skills",
+  "rationale": "omp 17.3.5 routed any package declaring an agent-plugins.org $schema to its strict provider, which rejected any SKILL.md carrying a frontmatter key outside the Agent Skills set. Claude Code needs argument-hint and disable-model-invocation in the same file, so 30 of 33 skills disappeared and the maintainers had to drop $schema from the root manifest. Whether those keys are fatal is genuinely open, so this fixture records the answer rather than grading it. What is not open: declaring $schema must not cost a package skills that are otherwise valid.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "issue": "https://github.com/can1357/oh-my-pi/issues/8853",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "plain-1",
+        "plain-2",
+        "plain-3"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  },
+  "optional": {
+    "skills": [
+      "hinted-1",
+      "hinted-2",
+      "hinted-3",
+      "hinted-4",
+      "hinted-5",
+      "hinted-6",
+      "hinted-7",
+      "hinted-8",
+      "hinted-9",
+      "hinted-10",
+      "hinted-11",
+      "hinted-12",
+      "hinted-13",
+      "hinted-14",
+      "hinted-15",
+      "hinted-16",
+      "hinted-17",
+      "hinted-18",
+      "hinted-19",
+      "hinted-20",
+      "hinted-21",
+      "hinted-22",
+      "hinted-23",
+      "hinted-24",
+      "hinted-25",
+      "hinted-26",
+      "hinted-27",
+      "hinted-28",
+      "hinted-29",
+      "hinted-30"
+    ]
+  }
+}

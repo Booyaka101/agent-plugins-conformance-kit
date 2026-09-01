@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7.1-IMMEDIATE-CHILD",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a child directory with no SKILL.md is not a skill and not an error",
+  "rationale": "Shared asset directories live alongside skills all the time.",
+  "quote": "Each immediate child directory containing a path named exactly `SKILL.md` that resolves to a regular file is treated as one skill.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

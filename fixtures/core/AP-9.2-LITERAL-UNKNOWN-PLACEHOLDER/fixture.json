@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-9.2-LITERAL-UNKNOWN-PLACEHOLDER",
+  "confidence": "core",
+  "spec": "9.2",
+  "title": "shell-style and unknown placeholders stay literal and do not invalidate an entry",
+  "rationale": "$HOME, ${HOME} and ${PLUGIN_CACHE} are not expanded and are not errors. A client running these through a shell expander leaks its own environment into a plugin subprocess.",
+  "quote": "Unrecognized placeholder-like text MUST remain literal. Clients MUST NOT perform any other placeholder or environment-variable expansion.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "literal"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

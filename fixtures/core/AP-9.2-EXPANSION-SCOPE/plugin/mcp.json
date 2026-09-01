@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "expanding": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "--data",
+        "${PLUGIN_DATA}/store",
+        "--root",
+        "${PLUGIN_ROOT}"
+      ],
+      "env": {
+        "CONFIG": "${PLUGIN_ROOT}/config.json",
+        "${PLUGIN_ROOT}": "literal-key"
+      },
+      "cwd": "${PLUGIN_ROOT}"
+    }
+  }
+}

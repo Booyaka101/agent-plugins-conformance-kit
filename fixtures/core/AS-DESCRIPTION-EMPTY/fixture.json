@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-DESCRIPTION-EMPTY",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a skill with an empty description is skipped",
+  "rationale": "The permitted length is 1-1024 characters.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/empty-description",
+        "ruleId": "AS-DESCRIPTION-EMPTY"
+      }
+    ],
+    "reported": []
+  }
+}

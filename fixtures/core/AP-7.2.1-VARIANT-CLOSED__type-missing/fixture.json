@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-VARIANT-CLOSED",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "a server entry with no type is invalid",
+  "rationale": "type is required and there is no default transport to infer from the other fields.",
+  "quote": "Each server configuration MUST contain a `type` field and match exactly one of the closed variants below. An unknown field, an unknown `type` value, or a field belonging to another variant makes that server entry invalid.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#typeless",
+        "ruleId": "AP-7.2.1-VARIANT-CLOSED"
+      }
+    ],
+    "reported": []
+  }
+}

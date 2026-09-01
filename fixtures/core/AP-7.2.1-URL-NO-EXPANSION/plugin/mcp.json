@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "literal": {
+      "type": "streamable-http",
+      "url": "https://example.com/mcp/${PLUGIN_ROOT}",
+      "headers": {
+        "X-Root": "${PLUGIN_ROOT}",
+        "X-Home": "$HOME"
+      }
+    }
+  }
+}

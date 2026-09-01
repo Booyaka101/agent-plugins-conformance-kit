@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-6.2-WRONG-KIND",
+  "confidence": "core",
+  "spec": "6.2",
+  "title": "skills present as a regular file invalidates skills and leaves MCP loading",
+  "rationale": "The failure boundary is the component type, not the plugin.",
+  "quote": "If a fixed component location is present but does not resolve to the expected filesystem kind — for example, `skills` does not resolve to a directory or `mcp.json` does not resolve to a regular file — the client MUST treat that component type as invalid and continue loading other supported component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "api"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "skills",
+        "ruleId": "AP-6.2-WRONG-KIND"
+      }
+    ],
+    "reported": []
+  }
+}

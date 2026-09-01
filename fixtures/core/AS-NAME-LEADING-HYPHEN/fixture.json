@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-NAME-LEADING-HYPHEN",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a skill name starting with a hyphen is skipped",
+  "rationale": "A leading hyphen is invalid even when the directory agrees.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/-leading",
+        "ruleId": "AS-NAME-LEADING-HYPHEN"
+      }
+    ],
+    "reported": []
+  }
+}

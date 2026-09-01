@@ -1,0 +1,12 @@
+# Anchored to the repository root on purpose. The fixture corpus deliberately contains
+# directories named node_modules and dist, because a client must not discover skills
+# inside them, and an unanchored rule silently drops those files from the corpus.
+/node_modules/
+/dist/
+/coverage/
+/.cache/
+/report.json
+
+*.tgz
+*.log
+.DS_Store

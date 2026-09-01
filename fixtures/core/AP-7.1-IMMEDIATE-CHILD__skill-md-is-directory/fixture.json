@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7.1-IMMEDIATE-CHILD",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a child directory whose SKILL.md is itself a directory is not a skill",
+  "rationale": "\"resolves to a regular file\" is part of the discovery rule, not a later validation step.",
+  "quote": "Each immediate child directory containing a path named exactly `SKILL.md` that resolves to a regular file is treated as one skill.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

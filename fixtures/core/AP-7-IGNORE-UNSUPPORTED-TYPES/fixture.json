@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7-IGNORE-UNSUPPORTED-TYPES",
+  "confidence": "core",
+  "spec": "7",
+  "title": "directories for component types outside v1 are ignored, not rejected",
+  "rationale": "Agents, hooks and commands are not v1 component types. Their presence must not affect the load.",
+  "quote": "Clients MUST ignore component types they do not support.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

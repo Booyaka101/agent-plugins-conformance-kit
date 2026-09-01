@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "demo",
+  "version": "spring-release",
+  "homepage": "not a url",
+  "repository": "internal://vcs/demo",
+  "license": "see LICENSE.txt",
+  "author": {
+    "name": "Author Name",
+    "email": "ask in chat",
+    "url": "n/a"
+  }
+}

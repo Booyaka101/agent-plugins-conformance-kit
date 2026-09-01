@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-COMMAND-NO-EXPANSION",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "a ${PLUGIN_ROOT} placeholder in command is not expanded, so the entry is invalid",
+  "rationale": "Expansion does not apply to command. Unexpanded, the value is neither a bare name nor a ./ path, so the entry fails. A client that expands it will load the server and pass nothing else.",
+  "quote": "Clients MUST NOT perform placeholder expansion in `command`.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#expanded",
+        "ruleId": "AP-7.2.1-COMMAND-NO-EXPANSION"
+      }
+    ],
+    "reported": []
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-5.2-CLOSED-SCHEMA",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "every permitted top-level field is accepted together",
+  "rationale": "The complement of the unknown-field fixtures: a client must not reject any of the ten named fields.",
+  "quote": "Its schema is closed: the only permitted top-level fields are `$schema`, `name`, `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords`, and `extensions`.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

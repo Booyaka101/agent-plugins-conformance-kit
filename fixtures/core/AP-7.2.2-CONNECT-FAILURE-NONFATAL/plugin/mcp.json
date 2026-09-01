@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "missing": {
+      "type": "stdio",
+      "command": "apconform-no-such-executable"
+    },
+    "unreachable": {
+      "type": "streamable-http",
+      "url": "https://127.0.0.1:9/mcp"
+    }
+  }
+}

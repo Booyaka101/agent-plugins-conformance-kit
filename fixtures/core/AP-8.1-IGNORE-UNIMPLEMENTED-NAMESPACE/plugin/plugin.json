@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "demo",
+  "extensions": {
+    "com.unimplemented.client": {
+      "hooks": 12345,
+      "nested": {
+        "deeply": [
+          null,
+          false,
+          {
+            "": []
+          }
+        ]
+      },
+      "$schema": "nonsense"
+    }
+  }
+}

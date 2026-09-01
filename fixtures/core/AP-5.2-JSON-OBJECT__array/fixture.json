@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.2-JSON-OBJECT",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "plugin.json holding a JSON array rejects the plugin",
+  "rationale": "Valid JSON is not enough. The top level must be an object.",
+  "quote": "The manifest MUST be JSON and MUST contain a top-level object.",
+  "observability": "report",
+  "expect": {
+    "rejected": "manifest-not-an-object",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

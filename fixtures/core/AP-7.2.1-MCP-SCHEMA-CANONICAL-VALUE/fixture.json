@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-MCP-SCHEMA-CANONICAL-VALUE",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "an unrecognized mcp.json $schema identifier disables MCP",
+  "rationale": "Not an Agent Plugins identifier at all. The plugin still loads its skills.",
+  "quote": "For Agent Plugins 1.0.0, its value MUST be the canonical identifier `https://agent-plugins.org/schemas/1.0.0/mcp.schema.json`.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "mcp.json",
+        "ruleId": "AP-7.2.1-MCP-SCHEMA-CANONICAL-VALUE"
+      }
+    ],
+    "reported": []
+  }
+}

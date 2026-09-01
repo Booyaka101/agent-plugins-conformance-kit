@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.2-JSON-OBJECT",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "plugin.json that is not valid JSON rejects the plugin",
+  "rationale": "Trailing commas are the most common way a hand-edited manifest stops being JSON.",
+  "quote": "The manifest MUST be JSON and MUST contain a top-level object.",
+  "observability": "report",
+  "expect": {
+    "rejected": "invalid-json",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

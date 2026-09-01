@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-URL-ABSOLUTE",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "a url carrying user information is invalid",
+  "rationale": "Credentials in the URL are the exact thing §7.2.1 forbids, and they are visible package data.",
+  "quote": "The `url` value MUST be an absolute HTTP or HTTPS URL and MUST NOT contain user information or a fragment.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#creds",
+        "ruleId": "AP-7.2.1-URL-ABSOLUTE"
+      }
+    ],
+    "reported": []
+  }
+}

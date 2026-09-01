@@ -1,0 +1,14 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "good": {
+      "type": "streamable-http",
+      "url": "https://example.com/mcp"
+    },
+    "bad": {
+      "type": "stdio",
+      "command": "node",
+      "cwd": "../escape"
+    }
+  }
+}

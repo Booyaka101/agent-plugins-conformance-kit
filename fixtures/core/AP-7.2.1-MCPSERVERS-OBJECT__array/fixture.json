@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-MCPSERVERS-OBJECT",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "mcpServers as an array disables MCP",
+  "rationale": "Server names are member names, so an array has nowhere to put them.",
+  "quote": "`mcpServers` MUST be an object whose member names identify servers and whose member values are server configuration objects. An empty `mcpServers` object is valid.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "mcp.json",
+        "ruleId": "AP-7.2.1-MCPSERVERS-OBJECT"
+      }
+    ],
+    "reported": []
+  }
+}

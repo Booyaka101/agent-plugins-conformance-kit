@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-COMMAND-SINGLE-TOKEN",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "an empty command is invalid",
+  "rationale": "command is required and there is no empty executable.",
+  "quote": "The `command` field MUST contain a single executable token, not a shell command string. It MUST be either a bare executable name or a plugin-relative path beginning with `./`.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#blank",
+        "ruleId": "AP-7.2.1-COMMAND-SINGLE-TOKEN"
+      }
+    ],
+    "reported": []
+  }
+}

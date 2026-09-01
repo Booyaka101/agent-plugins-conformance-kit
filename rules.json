@@ -1,0 +1,705 @@
+{
+  "specVersion": "1.0.0",
+  "specSource": "https://raw.githubusercontent.com/agentplugins/agent-plugins-spec/main/spec/1.0.0.md",
+  "agentSkillsSource": "https://agentskills.io/specification",
+  "severities": {
+    "fatal": "The client must reject the whole plugin and load none of its components.",
+    "report-and-ignore": "The client must report the problem, ignore the offending field, and keep loading.",
+    "skip-component": "The client must drop the offending component type or entry and keep loading the rest.",
+    "accept": "The client must load this. Rejecting or skipping is the failure."
+  },
+  "confidence": {
+    "core": "The specification states the required outcome directly.",
+    "disputed": "The specification permits more than one outcome, or an open issue records the disagreement. Fixtures accept either."
+  },
+  "rules": [
+    {
+      "id": "AP-4.1-MANIFEST-REQUIRED",
+      "section": "4.1",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "A plugin MUST include a manifest at `plugin.json` in the plugin root."
+    },
+    {
+      "id": "AP-4.1-CONTAINMENT",
+      "section": "4.1",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "When a client discovers, reads, or executes a file or directory supplied by the plugin package, the filesystem-resolved path MUST remain within the filesystem-resolved plugin root."
+    },
+    {
+      "id": "AP-4.1-RELATIVE-PATH-PREFIX",
+      "section": "4.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "A configuration field defined by this specification as a plugin-relative path MUST begin with `./`, be resolved against the plugin root, and remain within the filesystem-resolved plugin root after resolution."
+    },
+    {
+      "id": "AP-4.1-OPAQUE-VALUES",
+      "section": "4.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Configuration values not defined as paths, including command arguments and environment variable values, are opaque strings. Clients MUST NOT interpret them as package paths for the purpose of enforcing this section."
+    },
+    {
+      "id": "AP-4.1-SYMLINK-INSIDE-ROOT",
+      "section": "4.1",
+      "severity": "accept",
+      "confidence": "disputed",
+      "quote": "Symlinks, junctions, reparse points, and equivalent filesystem mechanisms MAY resolve to targets within the plugin root, but clients MUST reject package paths that resolve outside it.",
+      "note": "MAY, so a client that declines to follow an in-root symlink is not non-conformant. The fixture accepts either outcome and exists to surface the difference."
+    },
+    {
+      "id": "AP-4.1-BOUNDARY-MANIFEST",
+      "section": "4.1",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "If `plugin.json` does not resolve within the plugin root, the client MUST reject the plugin."
+    },
+    {
+      "id": "AP-4.1-BOUNDARY-COMPONENT-LOCATION",
+      "section": "4.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a fixed component location does not resolve within the plugin root, the client MUST treat that component type as invalid under §6.2."
+    },
+    {
+      "id": "AP-4.1-BOUNDARY-SKILL",
+      "section": "4.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered `SKILL.md` does not resolve within the plugin root, the client MUST skip that skill under §7.1."
+    },
+    {
+      "id": "AP-4.1-BOUNDARY-MCP-ENTRY",
+      "section": "4.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If an MCP server `command` or `cwd` fails containment, the client MUST treat that server entry as invalid under §7.2.2."
+    },
+    {
+      "id": "AP-5.1-MANIFEST-LOCATION",
+      "section": "5.1",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "Clients MUST check for a manifest at `plugin.json` in the plugin root."
+    },
+    {
+      "id": "AP-5.1-NO-ALTERNATE-MANIFEST",
+      "section": "5.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "No other file can replace, supplement, or override the core fields in root `plugin.json`.",
+      "issue": "https://github.com/openai/codex/issues/39895"
+    },
+    {
+      "id": "AP-5.1-MANIFEST-BEFORE-COMPONENTS",
+      "section": "5.1",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "A client loads and validates root `plugin.json` before discovering components or applying client-specific behavior."
+    },
+    {
+      "id": "AP-5.2-JSON-OBJECT",
+      "section": "5.2",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "The manifest MUST be JSON and MUST contain a top-level object."
+    },
+    {
+      "id": "AP-5.2-CLOSED-SCHEMA",
+      "section": "5.2",
+      "severity": "report-and-ignore",
+      "confidence": "core",
+      "quote": "Its schema is closed: the only permitted top-level fields are `$schema`, `name`, `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords`, and `extensions`."
+    },
+    {
+      "id": "AP-5.2-UNKNOWN-FIELD",
+      "section": "5.2",
+      "severity": "report-and-ignore",
+      "confidence": "core",
+      "quote": "Clients MUST report and ignore each unknown field and MUST continue loading the plugin if the manifest otherwise satisfies this section.",
+      "issue": "https://github.com/agentplugins/agent-plugins-spec/issues/77"
+    },
+    {
+      "id": "AP-5.2-NO-UNKNOWN-SEMANTICS",
+      "section": "5.2",
+      "severity": "report-and-ignore",
+      "confidence": "core",
+      "quote": "Clients MUST NOT assign semantics to unknown fields.",
+      "issue": "https://github.com/dotnet/skills/issues/1087"
+    },
+    {
+      "id": "AP-5.2-OTHER-VIOLATION-FATAL",
+      "section": "5.2",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "Any schema violation other than an unknown top-level field or a non-object `extensions` field is fatal: the client MUST reject the plugin and MUST NOT discover or execute any of its components."
+    },
+    {
+      "id": "AP-5.2-SCHEMA-CANONICAL-VALUE",
+      "section": "5.2",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "For Agent Plugins 1.0.0, its value MUST be the canonical identifier `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json`."
+    },
+    {
+      "id": "AP-5.2-SCHEMA-SELECTS-RULES",
+      "section": "5.2",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Clients MUST use a recognized `$schema` value to select locally supported manifest validation and interpretation rules."
+    },
+    {
+      "id": "AP-5.2-NO-SCHEMA-FETCH",
+      "section": "5.2",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Clients MUST NOT retrieve a schema while loading a plugin."
+    },
+    {
+      "id": "AP-5.2-UNSUPPORTED-VERSION",
+      "section": "5.2",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "If a client does not support the declared Agent Plugins version or an explicitly recognized compatible version, it MUST reject the plugin and SHOULD report the unsupported version."
+    },
+    {
+      "id": "AP-5.3-REQUIRED-FIELDS",
+      "section": "5.3",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "If a required field is missing, has the wrong type, is empty, or otherwise violates its requirements, the manifest is invalid. Clients MUST reject the plugin and MUST NOT discover or execute any of its components."
+    },
+    {
+      "id": "AP-5.4-AUTHOR-CLOSED",
+      "section": "5.4",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "The `author` object MAY contain only the `name`, `email`, and `url` fields, each with a string value. Any other field or value type makes the manifest invalid."
+    },
+    {
+      "id": "AP-5.4-METADATA-TYPE-ONLY",
+      "section": "5.4",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Clients MUST NOT reject a manifest solely because `version` is not valid Semantic Versioning; `homepage`, `repository`, or `author.url` is not a recognized URL; `author.email` is not a recognized email address; or `license` is not an SPDX identifier."
+    },
+    {
+      "id": "AP-5.5-NAME-LENGTH",
+      "section": "5.5",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "The name MUST be between 1 and 64 characters inclusive."
+    },
+    {
+      "id": "AP-5.5-NAME-CHARSET",
+      "section": "5.5",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "Lowercase alphanumeric characters, hyphens, and periods only."
+    },
+    {
+      "id": "AP-5.5-NAME-BOUNDARY",
+      "section": "5.5",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "The first and last characters MUST be alphanumeric."
+    },
+    {
+      "id": "AP-5.5-NAME-REPETITION",
+      "section": "5.5",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "Consecutive hyphens and consecutive periods are not allowed."
+    },
+    {
+      "id": "AP-5.5-NAME-PERIODS-ALLOWED",
+      "section": "5.5",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Periods are allowed in plugin names."
+    },
+    {
+      "id": "AP-6.1-FIXED-LOCATIONS",
+      "section": "6.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Clients MUST discover each supported component type from its fixed location."
+    },
+    {
+      "id": "AP-6.1-NO-INLINE-CONFIG",
+      "section": "6.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "`plugin.json` cannot override these locations or contain inline component configuration.",
+      "issue": "https://github.com/dotnet/skills/issues/1087"
+    },
+    {
+      "id": "AP-6.2-MISSING-LOCATION-OK",
+      "section": "6.2",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "If a fixed component location is absent, the client MUST NOT treat that as an error."
+    },
+    {
+      "id": "AP-6.2-WRONG-KIND",
+      "section": "6.2",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a fixed component location is present but does not resolve to the expected filesystem kind — for example, `skills` does not resolve to a directory or `mcp.json` does not resolve to a regular file — the client MUST treat that component type as invalid and continue loading other supported component types."
+    },
+    {
+      "id": "AP-7-IGNORE-UNSUPPORTED-TYPES",
+      "section": "7",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Clients MUST ignore component types they do not support."
+    },
+    {
+      "id": "AP-7.1-IMMEDIATE-CHILD",
+      "section": "7.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Each immediate child directory containing a path named exactly `SKILL.md` that resolves to a regular file is treated as one skill."
+    },
+    {
+      "id": "AP-7.1-DEPTH",
+      "section": "7.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Clients MUST NOT recursively search deeper descendants for additional skills."
+    },
+    {
+      "id": "AP-7.1-INVALID-SKILL-SKIPPED",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types."
+    },
+    {
+      "id": "AS-NAME-DIR-MISMATCH",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "Must match the parent directory name",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-NAME-MISSING",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "The required name field:",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-NAME-EMPTY",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "Must be 1-64 characters",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-NAME-TOO-LONG",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "Must be 1-64 characters",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-NAME-UPPERCASE",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "May only contain unicode lowercase alphanumeric characters (a-z, 0-9) and hyphens (-)",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-NAME-LEADING-HYPHEN",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "Must not start or end with a hyphen (-)",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-NAME-TRAILING-HYPHEN",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "Must not start or end with a hyphen (-)",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-NAME-DOUBLE-HYPHEN",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "Must not contain consecutive hyphens (--)",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-DESCRIPTION-MISSING",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "The required description field:",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-DESCRIPTION-EMPTY",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "Must be 1-1024 characters",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-DESCRIPTION-TOO-LONG",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "Must be 1-1024 characters",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-FRONTMATTER-MISSING",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "The SKILL.md file must contain YAML frontmatter followed by Markdown content.",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-FRONTMATTER-MALFORMED",
+      "section": "7.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "The SKILL.md file must contain YAML frontmatter followed by Markdown content.",
+        "source": "https://agentskills.io/specification"
+      }
+    },
+    {
+      "id": "AS-UNKNOWN-FRONTMATTER-KEY",
+      "section": "7.1",
+      "severity": "accept",
+      "confidence": "disputed",
+      "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+      "agentSkills": {
+        "quote": "The SKILL.md file must contain YAML frontmatter followed by Markdown content.",
+        "source": "https://agentskills.io/specification"
+      },
+      "issue": "https://github.com/can1357/oh-my-pi/issues/8853",
+      "note": "Agent Skills lists the frontmatter fields but does not state that the set is closed, and Agent Plugins §7.1 defers to it. Strict clients drop such skills; lenient ones keep them. The fixture accepts either outcome."
+    },
+    {
+      "id": "AP-7.2.1-CONFIG-PATH",
+      "section": "7.2.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "The MCP configuration path is `mcp.json` at the plugin root. MCP configuration MUST NOT be declared inline in `plugin.json` or loaded from any alternative core path."
+    },
+    {
+      "id": "AP-7.2.1-TOP-LEVEL-CLOSED",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "`mcp.json` MUST be a JSON object containing the required `$schema` and `mcpServers` fields, with no other top-level fields."
+    },
+    {
+      "id": "AP-7.2.1-MCPSERVERS-OBJECT",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "`mcpServers` MUST be an object whose member names identify servers and whose member values are server configuration objects. An empty `mcpServers` object is valid."
+    },
+    {
+      "id": "AP-7.2.1-MCP-SCHEMA-CANONICAL-VALUE",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "For Agent Plugins 1.0.0, its value MUST be the canonical identifier `https://agent-plugins.org/schemas/1.0.0/mcp.schema.json`."
+    },
+    {
+      "id": "AP-7.2.1-VARIANT-CLOSED",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "Each server configuration MUST contain a `type` field and match exactly one of the closed variants below. An unknown field, an unknown `type` value, or a field belonging to another variant makes that server entry invalid."
+    },
+    {
+      "id": "AP-7.2.1-COMMAND-SINGLE-TOKEN",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "The `command` field MUST contain a single executable token, not a shell command string. It MUST be either a bare executable name or a plugin-relative path beginning with `./`."
+    },
+    {
+      "id": "AP-7.2.1-COMMAND-NO-EXPANSION",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "Clients MUST NOT perform placeholder expansion in `command`."
+    },
+    {
+      "id": "AP-7.2.1-CWD-DEFAULT-PLUGIN-ROOT",
+      "section": "7.2.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "When `cwd` is omitted, clients MUST use the plugin root as the subprocess working directory."
+    },
+    {
+      "id": "AP-7.2.1-CWD-FORMS",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "Any other form or any post-resolution escape makes that server entry invalid under §7.2.2."
+    },
+    {
+      "id": "AP-7.2.1-CWD-CONTAINMENT",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "A plugin-relative or `${PLUGIN_ROOT}`-rooted value MUST remain within the filesystem-resolved plugin root."
+    },
+    {
+      "id": "AP-7.2.1-URL-ABSOLUTE",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "The `url` value MUST be an absolute HTTP or HTTPS URL and MUST NOT contain user information or a fragment."
+    },
+    {
+      "id": "AP-7.2.1-URL-HTTPS",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "Non-loopback endpoints MUST use HTTPS. HTTP MAY be used when the URL host is exactly `localhost` or an IP literal in a loopback range."
+    },
+    {
+      "id": "AP-7.2.1-HEADER-VALID",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "Header names and values MUST be valid HTTP header fields."
+    },
+    {
+      "id": "AP-7.2.1-HEADER-CASE-DUPLICATE",
+      "section": "7.2.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "Header names are case-insensitive; an entry containing the same header name more than once under different casing is invalid."
+    },
+    {
+      "id": "AP-7.2.1-URL-NO-EXPANSION",
+      "section": "7.2.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Clients MUST NOT perform placeholder or environment-variable expansion in `url`, header names, or header values."
+    },
+    {
+      "id": "AP-7.2.1-TRANSPORT-MINIMUM",
+      "section": "7.2.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "A client that supports Agent Plugins MCP servers MUST support at least one of `stdio` or `streamable-http` and SHOULD support both. Support for `sse` is OPTIONAL."
+    },
+    {
+      "id": "AP-7.2.1-TRANSPORT-DECLARED",
+      "section": "7.2.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "A client MUST use the transport declared by `type` for its initial connection attempt."
+    },
+    {
+      "id": "AP-7.2.2-CONFIG-ONLY-FROM-MCP-JSON",
+      "section": "7.2.2",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Clients that support MCP servers MUST load configuration only from `mcp.json` at the plugin root."
+    },
+    {
+      "id": "AP-7.2.2-INVALID-CONFIG-DISABLES-MCP",
+      "section": "7.2.2",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "the client MUST disable MCP for that plugin and continue loading other component types."
+    },
+    {
+      "id": "AP-7.2.2-ENTRY-ISOLATION",
+      "section": "7.2.2",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If an individual server entry does not satisfy the requirements in §7.2.1, the client MUST skip that server and continue loading other servers and component types."
+    },
+    {
+      "id": "AP-7.2.2-UNSUPPORTED-TRANSPORT",
+      "section": "7.2.2",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "If the client does not support the transport declared by an otherwise valid server entry, it MUST skip that server and continue loading other servers and component types."
+    },
+    {
+      "id": "AP-7.2.2-CONNECT-FAILURE-NONFATAL",
+      "section": "7.2.2",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "If a server fails to start, connect, authenticate, or complete the MCP handshake, the client MUST continue loading other servers and component types."
+    },
+    {
+      "id": "AP-8-NAMESPACE-REVERSE-DOMAIN",
+      "section": "8",
+      "severity": "accept",
+      "confidence": "disputed",
+      "quote": "Client-specific manifest data MUST be represented under a reverse-domain namespace in `extensions`.",
+      "note": "The requirement is on the plugin author. No client-side failure boundary is assigned to a namespace that is not reverse-domain, so clients differ. The fixture accepts either outcome."
+    },
+    {
+      "id": "AP-8-NO-PORTABLE-SEMANTICS",
+      "section": "8",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Agent Plugins assigns no portable discovery, validation, loading, or failure semantics to client extension data or files."
+    },
+    {
+      "id": "AP-8.1-EXTENSIONS-MEMBER-OBJECTS",
+      "section": "8.1",
+      "severity": "fatal",
+      "confidence": "core",
+      "quote": "The optional `extensions` field in `plugin.json` MUST be an object whose member names are client extension namespaces and whose member values are objects."
+    },
+    {
+      "id": "AP-8.1-EXTENSIONS-NOT-OBJECT",
+      "section": "8.1",
+      "severity": "report-and-ignore",
+      "confidence": "core",
+      "quote": "If `extensions` is not an object, the client MUST report and ignore the field and continue loading components.",
+      "issue": "https://github.com/agentplugins/agent-plugins-spec/issues/77"
+    },
+    {
+      "id": "AP-8.1-IGNORE-UNIMPLEMENTED-NAMESPACE",
+      "section": "8.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "A client MUST ignore manifest entries for namespaces it does not implement without validating the contents of their values."
+    },
+    {
+      "id": "AP-8.2-EXTENSION-DIRECTORY",
+      "section": "8.2",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "The extension directory for a namespace is the top-level directory named after it."
+    },
+    {
+      "id": "AP-9.2-RESERVED-ENV-NAMES",
+      "section": "9.2",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "An MCP server's `env` object MUST NOT contain entries named `PLUGIN_ROOT` or `PLUGIN_DATA`. Such an entry makes that server configuration invalid under §7.2.2."
+    },
+    {
+      "id": "AP-9.2-LITERAL-UNKNOWN-PLACEHOLDER",
+      "section": "9.2",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Unrecognized placeholder-like text MUST remain literal. Clients MUST NOT perform any other placeholder or environment-variable expansion."
+    },
+    {
+      "id": "AP-9.2-EXPANSION-SCOPE",
+      "section": "9.2",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Expansion applies to every string element of `args`, every string value in `env`, and the `cwd` string. It does not apply to `env` keys, `command`, or fixed component locations."
+    },
+    {
+      "id": "AP-9.1-SUBPROCESS-VARIABLES",
+      "section": "9.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Clients that launch plugin subprocesses (i.e., stdio MCP servers) MUST provide `PLUGIN_ROOT` and `PLUGIN_DATA` in each subprocess environment."
+    },
+    {
+      "id": "AP-10.1-MCP-VERSION-MATCH",
+      "section": "10.1",
+      "severity": "skip-component",
+      "confidence": "core",
+      "quote": "When `mcp.json` is present, the version in its `$schema` value MUST match the version declared by `plugin.json`. A mismatch makes the MCP configuration invalid under §7.2.2 but does not invalidate other component types."
+    },
+    {
+      "id": "AP-10.1-NO-IDENTIFIER-REUSE",
+      "section": "10.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Published canonical schema identifiers MUST NOT be reassigned to different schema contents."
+    },
+    {
+      "id": "AP-10.1-OLDER-VERSIONS-ALLOWED",
+      "section": "10.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Existing plugins MAY continue targeting an older Agent Plugins version; clients determine support using the declared canonical identifiers and any explicit compatibility mappings."
+    },
+    {
+      "id": "AP-11.1-SUPPORT-ONE-COMPONENT-TYPE",
+      "section": "11.1",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Supports at least one component type (skills or MCP servers)."
+    },
+    {
+      "id": "AP-11.3-COMPONENT-FAILURE-ISOLATION",
+      "section": "11.3",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "A failure isolated to a component type, component entry, or component process MUST NOT prevent the client from loading independently valid components."
+    },
+    {
+      "id": "AP-11.3-UNSUPPORTED-IS-NOT-ERROR",
+      "section": "11.3",
+      "severity": "accept",
+      "confidence": "core",
+      "quote": "Clients MAY report partially unsupported plugins, but lack of support for a component type, MCP transport, or client extension is not itself an error."
+    }
+  ]
+}

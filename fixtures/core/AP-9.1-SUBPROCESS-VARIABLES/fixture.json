@@ -1,0 +1,21 @@
+{
+  "ruleId": "AP-9.1-SUBPROCESS-VARIABLES",
+  "confidence": "core",
+  "spec": "9.1",
+  "title": "an stdio entry relying on PLUGIN_ROOT and PLUGIN_DATA loads",
+  "rationale": "The configuration a client must be able to launch. This fixture asserts the entry is accepted, which is the part the load report can see.",
+  "quote": "Clients that launch plugin subprocesses (i.e., stdio MCP servers) MUST provide `PLUGIN_ROOT` and `PLUGIN_DATA` in each subprocess environment.",
+  "observability": "partial",
+  "observabilityNote": "Whether the two variables actually reach the subprocess environment is not visible in a load report. Test that in the client's own suite.",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "local"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

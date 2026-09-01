@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-5.4-METADATA-TYPE-ONLY",
+  "confidence": "core",
+  "spec": "5.4",
+  "title": "unparseable metadata values do not make a manifest invalid",
+  "rationale": "version is not semver, homepage and repository are not URLs, author.email is not an email and license is not SPDX. §5.4 forbids rejecting for any of these.",
+  "quote": "Clients MUST NOT reject a manifest solely because `version` is not valid Semantic Versioning; `homepage`, `repository`, or `author.url` is not a recognized URL; `author.email` is not a recognized email address; or `license` is not an SPDX identifier.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

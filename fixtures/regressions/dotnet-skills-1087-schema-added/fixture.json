@@ -1,0 +1,34 @@
+{
+  "ruleId": "AP-5.2-NO-UNKNOWN-SEMANTICS",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "the same manifest with $schema added but the inline fields left in place",
+  "rationale": "The issue notes that adding $schema is necessary but not sufficient: the power then loads with all functional components excluded. The manifest now passes, the three inline fields are reported and ignored, and the skill loads from skills/ because that is where it happens to be. A client that reads the inline skills array would load it twice or from the wrong path.",
+  "quote": "Clients MUST NOT assign semantics to unknown fields.",
+  "issue": "https://github.com/dotnet/skills/issues/1087",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "msbuild-diagnostics"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": [
+      {
+        "field": "skills",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      },
+      {
+        "field": "agents",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      },
+      {
+        "field": "mcpServers",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      }
+    ]
+  }
+}

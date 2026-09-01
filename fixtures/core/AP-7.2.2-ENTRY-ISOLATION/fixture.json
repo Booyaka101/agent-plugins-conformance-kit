@@ -1,0 +1,27 @@
+{
+  "ruleId": "AP-7.2.2-ENTRY-ISOLATION",
+  "confidence": "core",
+  "spec": "7.2.2",
+  "title": "one invalid entry among four leaves the other three loading",
+  "rationale": "Entry isolation at scale, and the invalid entry sits in the middle of the document rather than at the end.",
+  "quote": "If an individual server entry does not satisfy the requirements in §7.2.1, the client MUST skip that server and continue loading other servers and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "first",
+        "second",
+        "fourth"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#broken",
+        "ruleId": "AP-7.2.2-ENTRY-ISOLATION"
+      }
+    ],
+    "reported": []
+  }
+}

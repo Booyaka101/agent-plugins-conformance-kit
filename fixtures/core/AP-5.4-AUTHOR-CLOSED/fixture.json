@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.4-AUTHOR-CLOSED",
+  "confidence": "core",
+  "spec": "5.4",
+  "title": "an unknown field inside author is fatal",
+  "rationale": "author is a closed object of three optional strings, and §5.4 makes any other field invalid rather than ignorable.",
+  "quote": "The `author` object MAY contain only the `name`, `email`, and `url` fields, each with a string value. Any other field or value type makes the manifest invalid.",
+  "observability": "report",
+  "expect": {
+    "rejected": "author-unknown-field",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

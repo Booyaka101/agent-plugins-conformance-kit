@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-NAME-DIR-MISMATCH",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a skill whose frontmatter name does not match its directory is skipped",
+  "rationale": "The name is the identity a client exposes. If the directory and the frontmatter disagree there is no single answer to what the skill is called.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/renamed",
+        "ruleId": "AS-NAME-DIR-MISMATCH"
+      }
+    ],
+    "reported": []
+  }
+}

@@ -1,0 +1,7 @@
+# The fixture corpus is the product, and its bytes are what a client's SKILL.md parser and
+# JSON reader actually see. Checking it out with CRLF on Windows would change those bytes,
+# so every text file is normalized to LF in the repository and on checkout everywhere.
+* text=auto eol=lf
+
+*.png -text
+*.tgz -text

@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-6.2-WRONG-KIND",
+  "confidence": "core",
+  "spec": "6.2",
+  "title": "mcp.json present as a directory invalidates MCP and leaves skills loading",
+  "rationale": "The mirror image of the skills-as-a-file case, and the one clients usually miss.",
+  "quote": "If a fixed component location is present but does not resolve to the expected filesystem kind — for example, `skills` does not resolve to a directory or `mcp.json` does not resolve to a regular file — the client MUST treat that component type as invalid and continue loading other supported component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "mcp.json",
+        "ruleId": "AP-6.2-WRONG-KIND"
+      }
+    ],
+    "reported": []
+  }
+}

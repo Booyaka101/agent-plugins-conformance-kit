@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7.1-DEPTH",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "skills are not discovered below the immediate children of skills/",
+  "rationale": "Recursive discovery turns a bundled reference copy of another plugin into a set of live skills.",
+  "quote": "Clients MUST NOT recursively search deeper descendants for additional skills.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

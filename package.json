@@ -1,0 +1,66 @@
+{
+  "name": "agent-plugins-conformance-kit",
+  "version": "1.0.0",
+  "description": "Conformance test suite for Agent Plugins 1.0.0 client loaders: a fixture corpus, a runner, and an adapter contract.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Booyaka101",
+  "homepage": "https://github.com/Booyaka101/agent-plugins-conformance-kit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Booyaka101/agent-plugins-conformance-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Booyaka101/agent-plugins-conformance-kit/issues"
+  },
+  "keywords": [
+    "agent-plugins",
+    "conformance",
+    "agent-skills",
+    "mcp"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "apconform": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./rules.json": "./rules.json",
+    "./report.schema.json": "./report.schema.json"
+  },
+  "files": [
+    "dist",
+    "fixtures",
+    "adapters",
+    "examples",
+    "rules.json",
+    "checklist.json",
+    "report.schema.json",
+    "action.yml",
+    "ADAPTERS.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && vitest run",
+    "verify:sources": "node scripts/verify-sources.mjs",
+    "prepack": "npm run build",
+    "capture:images": "npm run build && node scripts/capture-images.mjs"
+  },
+  "dependencies": {
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@kuralle-agents/fs": "0.25.0",
+    "@kuralle-agents/plugins": "0.25.0",
+    "@types/node": "^22.15.3",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7.2.2-CONFIG-ONLY-FROM-MCP-JSON",
+  "confidence": "core",
+  "spec": "7.2.2",
+  "title": "servers declared under extensions are not MCP servers",
+  "rationale": "A client extension namespace can hold anything, and none of it is portable MCP configuration.",
+  "quote": "Clients that support MCP servers MUST load configuration only from `mcp.json` at the plugin root.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "real"
+      ]
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

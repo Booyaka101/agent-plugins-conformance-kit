@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.3-REQUIRED-FIELDS",
+  "confidence": "core",
+  "spec": "5.3",
+  "title": "an empty name rejects the plugin",
+  "rationale": "The empty string is listed as an invalid name in §5.5 and as an empty required field in §5.3.",
+  "quote": "If a required field is missing, has the wrong type, is empty, or otherwise violates its requirements, the manifest is invalid. Clients MUST reject the plugin and MUST NOT discover or execute any of its components.",
+  "observability": "report",
+  "expect": {
+    "rejected": "required-field-missing",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

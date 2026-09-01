@@ -1,0 +1,24 @@
+{
+  "ruleId": "AP-5.2-UNKNOWN-FIELD",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "an unknown top-level manifest field is reported and ignored",
+  "rationale": "The published plugin.schema.json sets additionalProperties: false, so the obvious implementation (validate, reject on failure) is non-conformant here. This is the case spec issue #77 describes.",
+  "quote": "Clients MUST report and ignore each unknown field and MUST continue loading the plugin if the manifest otherwise satisfies this section.",
+  "issue": "https://github.com/agentplugins/agent-plugins-spec/issues/77",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": [
+      {
+        "field": "skills",
+        "ruleId": "AP-5.2-UNKNOWN-FIELD"
+      }
+    ]
+  }
+}

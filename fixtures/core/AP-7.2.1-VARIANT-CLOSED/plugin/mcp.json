@@ -1,0 +1,14 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "mixed": {
+      "type": "stdio",
+      "command": "node",
+      "url": "https://example.com/mcp"
+    },
+    "fine": {
+      "type": "stdio",
+      "command": "node"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7.1-DEPTH",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a skill four levels below skills/ is not discovered",
+  "rationale": "The vendored-plugin case: skills/vendor/node_modules/other-plugin/skills/omega.",
+  "quote": "Clients MUST NOT recursively search deeper descendants for additional skills.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

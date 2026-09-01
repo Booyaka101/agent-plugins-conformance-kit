@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-5.2-SCHEMA-CANONICAL-VALUE",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "a $schema that is not the canonical identifier rejects the plugin",
+  "rationale": "The value is pinned by const. A near-miss such as http:// or a trailing slash is not the canonical identifier.",
+  "quote": "For Agent Plugins 1.0.0, its value MUST be the canonical identifier `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json`.",
+  "observability": "report",
+  "expect": {
+    "rejected": "unsupported-schema-version",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

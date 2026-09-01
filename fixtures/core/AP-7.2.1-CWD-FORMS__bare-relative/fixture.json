@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-CWD-FORMS",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "a bare relative cwd is not a permitted form",
+  "rationale": "\"data\" resolves inside the plugin root but is still not one of the three permitted forms. Containment alone is not the test.",
+  "quote": "Any other form or any post-resolution escape makes that server entry invalid under §7.2.2.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#bare",
+        "ruleId": "AP-7.2.1-CWD-FORMS"
+      }
+    ],
+    "reported": []
+  }
+}

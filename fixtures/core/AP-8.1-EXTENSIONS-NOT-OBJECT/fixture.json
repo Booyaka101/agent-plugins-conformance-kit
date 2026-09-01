@@ -1,0 +1,26 @@
+{
+  "ruleId": "AP-8.1-EXTENSIONS-NOT-OBJECT",
+  "confidence": "core",
+  "spec": "8.1",
+  "title": "a string extensions field is reported and ignored",
+  "rationale": "The published schema types extensions as an object, so a validator returns the same result here as for a fatal type violation. This is the second case in spec issue #77.",
+  "quote": "If `extensions` is not an object, the client MUST report and ignore the field and continue loading components.",
+  "issue": "https://github.com/agentplugins/agent-plugins-spec/issues/77",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": [
+      {
+        "field": "extensions",
+        "ruleId": "AP-8.1-EXTENSIONS-NOT-OBJECT"
+      }
+    ]
+  }
+}

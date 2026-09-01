@@ -1,0 +1,18 @@
+{
+  "ruleId": "AP-8.1-EXTENSIONS-MEMBER-OBJECTS",
+  "confidence": "core",
+  "spec": "8.1",
+  "title": "a namespace mapped to a non-object is a fatal manifest violation",
+  "rationale": "The §8.1 exception covers a non-object extensions field, not a non-object member value. That falls back to §5.2 and is fatal. The narrow exception is easy to widen by accident.",
+  "quote": "The optional `extensions` field in `plugin.json` MUST be an object whose member names are client extension namespaces and whose member values are objects.",
+  "observability": "report",
+  "expect": {
+    "rejected": "extensions-member-not-an-object",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

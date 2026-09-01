@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-4.1-BOUNDARY-MANIFEST",
+  "confidence": "core",
+  "spec": "4.1",
+  "title": "plugin.json resolving outside the plugin root rejects the plugin",
+  "rationale": "Boundary rule 1 in §4.1. A manifest reached through an escaping link is not the plugin root manifest.",
+  "quote": "If `plugin.json` does not resolve within the plugin root, the client MUST reject the plugin.",
+  "observability": "report",
+  "links": [
+    {
+      "path": "plugin.json",
+      "target": "../outside/plugin.json",
+      "type": "file"
+    }
+  ],
+  "expect": {
+    "rejected": "path-escapes-plugin-root",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

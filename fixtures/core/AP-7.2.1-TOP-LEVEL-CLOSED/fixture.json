@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-TOP-LEVEL-CLOSED",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "an unknown top-level field in mcp.json disables MCP",
+  "rationale": "The top-level document is closed. Unlike plugin.json there is no report-and-ignore exception here.",
+  "quote": "`mcp.json` MUST be a JSON object containing the required `$schema` and `mcpServers` fields, with no other top-level fields.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "mcp.json",
+        "ruleId": "AP-7.2.1-TOP-LEVEL-CLOSED"
+      }
+    ],
+    "reported": []
+  }
+}

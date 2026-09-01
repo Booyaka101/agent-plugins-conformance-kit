@@ -1,0 +1,20 @@
+{
+  "ruleId": "AP-7.2.1-MCPSERVERS-OBJECT",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "an empty mcpServers object is valid",
+  "rationale": "Stated explicitly. A client that treats empty as malformed disables MCP for a legal package.",
+  "quote": "`mcpServers` MUST be an object whose member names identify servers and whose member values are server configuration objects. An empty `mcpServers` object is valid.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

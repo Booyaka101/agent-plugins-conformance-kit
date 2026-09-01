@@ -1,0 +1,25 @@
+{
+  "ruleId": "AP-7.2.1-CWD-CONTAINMENT",
+  "confidence": "core",
+  "spec": "7.2.1",
+  "title": "a ./-prefixed cwd that escapes after resolution is invalid",
+  "rationale": "\"./../../outside\" begins with ./ and still leaves the plugin root. Checking the prefix is not checking containment.",
+  "quote": "A plugin-relative or `${PLUGIN_ROOT}`-rooted value MUST remain within the filesystem-resolved plugin root.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [],
+      "mcpServers": [
+        "fine"
+      ]
+    },
+    "skipped": [
+      {
+        "what": "mcp.json#escaping",
+        "ruleId": "AP-7.2.1-CWD-CONTAINMENT"
+      }
+    ],
+    "reported": []
+  }
+}

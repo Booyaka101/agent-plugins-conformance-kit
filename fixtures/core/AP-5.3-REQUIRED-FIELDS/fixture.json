@@ -1,0 +1,19 @@
+{
+  "ruleId": "AP-5.3-REQUIRED-FIELDS",
+  "confidence": "core",
+  "spec": "5.3",
+  "title": "a manifest with no $schema rejects the plugin",
+  "rationale": "The exact failure dotnet/skills#1087 reports: \"plugin.json has an unsupported or missing $schema\".",
+  "quote": "If a required field is missing, has the wrong type, is empty, or otherwise violates its requirements, the manifest is invalid. Clients MUST reject the plugin and MUST NOT discover or execute any of its components.",
+  "issue": "https://github.com/dotnet/skills/issues/1087",
+  "observability": "report",
+  "expect": {
+    "rejected": "required-field-missing",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

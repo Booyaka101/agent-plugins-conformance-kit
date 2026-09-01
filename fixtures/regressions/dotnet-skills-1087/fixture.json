@@ -1,0 +1,19 @@
+{
+  "ruleId": "AP-5.3-REQUIRED-FIELDS",
+  "confidence": "core",
+  "spec": "5.3",
+  "title": "a manifest with no $schema and top-level skills, agents and mcpServers",
+  "rationale": "The dotnet/skills plugin manifests as published. Kiro reported \"plugin.json has an unsupported or missing $schema\" and refused to load the power. Missing $schema is fatal on its own, so nothing loads and the three unknown fields are never reached.",
+  "quote": "If a required field is missing, has the wrong type, is empty, or otherwise violates its requirements, the manifest is invalid. Clients MUST reject the plugin and MUST NOT discover or execute any of its components.",
+  "issue": "https://github.com/dotnet/skills/issues/1087",
+  "observability": "report",
+  "expect": {
+    "rejected": "required-field-missing",
+    "loaded": {
+      "skills": [],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

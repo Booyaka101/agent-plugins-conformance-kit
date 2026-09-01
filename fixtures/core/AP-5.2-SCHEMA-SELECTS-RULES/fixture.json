@@ -1,0 +1,21 @@
+{
+  "ruleId": "AP-5.2-SCHEMA-SELECTS-RULES",
+  "confidence": "core",
+  "spec": "5.2",
+  "title": "the canonical 1.0.0 identifier selects the 1.0.0 rules and the plugin loads",
+  "rationale": "The positive half of $schema handling. Pairs with the unsupported-version fixture.",
+  "quote": "Clients MUST use a recognized `$schema` value to select locally supported manifest validation and interpretation rules.",
+  "observability": "partial",
+  "observabilityNote": "The load report shows that locally supported rules were selected. It cannot show which rule set the client chose internally.",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  }
+}

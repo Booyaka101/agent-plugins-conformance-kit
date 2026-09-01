@@ -1,0 +1,26 @@
+{
+  "ruleId": "AS-DESCRIPTION-TOO-LONG",
+  "confidence": "core",
+  "spec": "7.1",
+  "title": "a skill description longer than 1024 characters is skipped",
+  "rationale": "1025 characters. The upper bound is the one clients most often leave unchecked.",
+  "quote": "If a discovered skill does not conform to the Agent Skills specification, the client MUST skip that skill and continue loading other skills and component types.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha",
+        "omega"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/long-description",
+        "ruleId": "AS-DESCRIPTION-TOO-LONG"
+      }
+    ],
+    "reported": []
+  }
+}

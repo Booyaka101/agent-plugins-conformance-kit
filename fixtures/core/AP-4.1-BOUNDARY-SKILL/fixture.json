@@ -1,0 +1,32 @@
+{
+  "ruleId": "AP-4.1-BOUNDARY-SKILL",
+  "confidence": "core",
+  "spec": "4.1",
+  "title": "a skills/ entry linked outside the plugin root is skipped, not followed",
+  "rationale": "Boundary rule 3 in §4.1. Following the link would let a package read files it does not ship.",
+  "quote": "If a discovered `SKILL.md` does not resolve within the plugin root, the client MUST skip that skill under §7.1.",
+  "observability": "report",
+  "links": [
+    {
+      "path": "skills/escaped",
+      "target": "../../outside/escaped",
+      "type": "dir"
+    }
+  ],
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [
+      {
+        "what": "skills/escaped",
+        "ruleId": "AP-4.1-BOUNDARY-SKILL"
+      }
+    ],
+    "reported": []
+  }
+}
