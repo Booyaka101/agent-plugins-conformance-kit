@@ -43,7 +43,7 @@ Two things measured rather than assumed:
 
 Every number below was produced by a command run on this machine, not estimated.
 
-- `npm test` - 476 tests, 8 files, all passing, from a wiped `node_modules` and `dist`.
+- `npm test` - 481 tests, 8 files, all passing, from a wiped `node_modules` and `dist`.
 - `npm run typecheck` - clean, with `noUnusedLocals`, `noUnusedParameters`,
   `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` on.
 - `npm run verify:sources` - 89/89 spec quotes verbatim, 14/14 Agent Skills constraints,
@@ -69,18 +69,37 @@ Every number below was produced by a command run on this machine, not estimated.
 Exit codes: 0 clean, 1 conformance failures or adapter errors, 2 could not run. All
 verified directly rather than through a pipe.
 
+## Validated against two independent clients
+
+A corpus run against one implementation cannot distinguish "the client is wrong" from
+"the fixture is wrong". So it is also run against `pi-agent-plugins` 0.1.8, written by
+someone else, with its own conformance document.
+
+- `pi-agent-plugins`: 132 pass, 0 fail, 1 skipped. It passes the two §4.1 fixtures the
+  other client fails, which is what makes those a defect rather than an opinion.
+- `@kuralle-agents/plugins`: 130 pass, 2 fail, 1 skipped.
+
+That exercise found three defects in the corpus, all fixed before release:
+
+1. `AP-7.2.1-HEADER-CASE-DUPLICATE` gave its control server a header, so a client that
+   validates headers and then declines to activate headered remotes for documented safety
+   reasons failed a fixture about casing. The control server is now headerless.
+2. `AP-7.2.1-URL-NO-EXPANSION` required the entry to be activated. Not expanding is the
+   MUST; connecting is not. Now `partial` with the entry optional.
+3. `AP-8.1-EXTENSIONS-MEMBER-OBJECTS` was `core`. Both clients apply §8.1's
+   report-and-ignore exception to member values, against the stricter reading. Two
+   independent implementations agreeing against me is not a defect in them, so it is now
+   `disputed` and accepts either outcome pending spec#77.
+
+CI runs both clients on every push.
+
 ## Findings
 
-The suite found three real conformance defects in `@kuralle-agents/plugins` 0.25.0:
+The suite found two real conformance defects in `@kuralle-agents/plugins` 0.25.0:
 
 1. **§4.1 boundary rule 3** - a `skills/` entry linked outside the plugin root is followed
    and its skill is loaded. `loadSkillsComponent` has no containment check.
 2. **§4.1 boundary rule 2** - the same gap for the `skills/` location itself.
-3. **§5.2 via §8.1** - `extensions: { "com.example.client": "enabled" }` is reported and
-   dropped rather than rejecting the plugin. `validateExtensions` applies the §8.1
-   report-and-ignore exception to a member value, but the exception is only for a
-   non-object `extensions` field.
-
 The loader does enforce containment on `plugin.json` itself, so 1 and 2 read as an
 oversight rather than a decision. Filing these upstream is the first distribution step.
 

@@ -606,8 +606,10 @@
       "id": "AP-8.1-EXTENSIONS-MEMBER-OBJECTS",
       "section": "8.1",
       "severity": "fatal",
-      "confidence": "core",
-      "quote": "The optional `extensions` field in `plugin.json` MUST be an object whose member names are client extension namespaces and whose member values are objects."
+      "confidence": "disputed",
+      "quote": "The optional `extensions` field in `plugin.json` MUST be an object whose member names are client extension namespaces and whose member values are objects.",
+      "note": "Two independently written 1.0.0 loaders both apply §8.1's report-and-ignore exception to member values as well as to the field, so the stricter reading that §5.2 makes this fatal is not settled in practice. Raised on the spec issue below; the fixture accepts either outcome until it is answered.",
+      "issue": "https://github.com/agentplugins/agent-plugins-spec/issues/77"
     },
     {
       "id": "AP-8.1-EXTENSIONS-NOT-OBJECT",

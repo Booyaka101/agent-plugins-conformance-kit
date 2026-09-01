@@ -1,0 +1,27 @@
+{
+  "ruleId": "AP-8.1-EXTENSIONS-MEMBER-OBJECTS",
+  "confidence": "disputed",
+  "spec": "8.1",
+  "title": "a namespace mapped to a non-object is a fatal manifest violation",
+  "rationale": "§8.1's exception names the extensions field, so on a strict reading a non-object member value breaks the requirement that opens the same section and §5.2 makes it fatal. Both loaders tested read the exception as covering members and load the plugin. The fixture records which way a client goes rather than grading it, until the spec issue settles the reading.",
+  "quote": "The optional `extensions` field in `plugin.json` MUST be an object whose member names are client extension namespaces and whose member values are objects.",
+  "observability": "report",
+  "expect": {
+    "rejected": null,
+    "loaded": {
+      "skills": [
+        "alpha"
+      ],
+      "mcpServers": []
+    },
+    "skipped": [],
+    "reported": []
+  },
+  "issue": "https://github.com/agentplugins/agent-plugins-spec/issues/77",
+  "optional": {
+    "rejected": true,
+    "reported": [
+      "extensions"
+    ]
+  }
+}

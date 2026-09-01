@@ -11,10 +11,7 @@
     },
     "fine": {
       "type": "streamable-http",
-      "url": "https://example.com/other",
-      "headers": {
-        "X-Tenant": "a"
-      }
+      "url": "https://example.com/other"
     }
   }
 }

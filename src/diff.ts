@@ -23,6 +23,17 @@ export interface FixtureExpectation {
 export interface NameSets {
   skills?: string[];
   mcpServers?: string[];
+  /**
+   * Rejecting and loading are both conformant, so rejectedness is recorded rather than
+   * asserted. Used where the specification can be read two ways and independent
+   * implementations actually do read it differently.
+   */
+  rejected?: boolean;
+  /**
+   * Manifest fields a client may or may not report. Where it is contested whether a
+   * violation is fatal, it is equally contested whether there is anything to report.
+   */
+  reported?: string[];
 }
 
 export interface Fixture {
@@ -171,18 +182,23 @@ function compareReported(
   report: LoadReport,
   failures: string[],
   warnings: string[],
+  notes: string[],
 ): void {
   const expected = new Set(fixture.expect.reported.map((entry) => entry.field));
   const actual = new Set(report.reported.map((entry) => entry.field));
 
-  const missing = [...expected].filter((field) => !actual.has(field));
-  const unexpected = [...actual].filter((field) => !expected.has(field));
+  const eitherWay = new Set(fixture.optional?.reported ?? []);
+  const missing = [...expected].filter((field) => !actual.has(field) && !eitherWay.has(field));
+  const unexpected = [...actual].filter((field) => !expected.has(field) && !eitherWay.has(field));
 
   if (missing.length > 0) {
     failures.push(`expected reported fields to contain ${list(missing)}, got ${list(actual)}`);
   }
   if (unexpected.length > 0) {
     failures.push(`expected reported fields not to contain ${list(unexpected)}, got ${list(actual)}`);
+  }
+  for (const field of eitherWay) {
+    notes.push(`reported ${actual.has(field) ? 'includes' : 'omits'} the optional "${field}"`);
   }
 
   warnOnRuleIdMismatch(
@@ -254,25 +270,30 @@ export function diffReport(fixture: Fixture, report: LoadReport, options: DiffOp
 
   const shouldReject = fixture.expect.rejected !== null;
   const didReject = report.rejected !== null;
+  const rejectionIsOpen = fixture.optional?.rejected === true;
 
-  if (shouldReject !== didReject) {
+  if (rejectionIsOpen) {
+    notes.push(`the client ${didReject ? 'rejects' : 'loads'} this, and both are conformant`);
+  } else if (shouldReject !== didReject) {
     failures.push(
       `expected rejected=${shouldReject ? '<non-null>' : 'null'}, got rejected=${quote(report.rejected)}`,
     );
   }
 
-  // A rejected plugin has no components, so the name channels carry no information.
-  if (didReject && shouldReject) {
+  if (didReject) {
+    // A rejection is only conformant if it took the components with it, whether the
+    // rejection itself was required or merely permitted.
     if (report.loaded.skills.length > 0 || report.loaded.mcpServers.length > 0) {
       failures.push(
         `expected a rejected plugin to load nothing, got skills=${list(report.loaded.skills)} mcpServers=${list(report.loaded.mcpServers)}`,
       );
     }
-  } else if (!shouldReject) {
+  } else if (!shouldReject || rejectionIsOpen) {
+    // Where rejecting is optional, `expect` describes the loading outcome.
     compareNames('skills', report.loaded.skills, fixture, failures, notes);
     compareNames('mcpServers', report.loaded.mcpServers, fixture, failures, notes);
     compareAtLeastOne(fixture, report, failures);
-    compareReported(fixture, report, failures, warnings);
+    compareReported(fixture, report, failures, warnings, notes);
     compareSkipped(fixture, report, options.strictReporting === true, failures, warnings);
   }
 

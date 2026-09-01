@@ -45,6 +45,29 @@ jobs:
           name: kuralle-report
           path: kuralle-report.json
 
+  # A corpus checked against one client cannot tell a wrong fixture from a wrong client.
+  # This second client is written by someone else and passes everything, which is what
+  # makes the failures above defects rather than opinions.
+  second-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Run the suite against pi-agent-plugins
+        run: >
+          node dist/cli.js run --adapter adapters/pi.mjs
+          --adapter-exec "node --experimental-strip-types"
+          --quiet --json pi-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pi-report
+          path: pi-report.json
+
   # The action has to be exercised, not just linted: it is the surface most users touch and
   # the only one that cannot be covered by the test suite. It runs against the tarball
   # built in this job, so a broken action.yml goes red before a release rather than after.

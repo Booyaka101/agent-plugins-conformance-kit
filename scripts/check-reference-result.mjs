@@ -10,12 +10,11 @@
 
 import { readFileSync } from 'node:fs';
 
-// The three defects described in the README. Skipped fixtures are excluded, so this holds
-// on Windows (where the file-symlink fixture cannot run) as well as on Linux.
+// The two §4.1 defects described in the README. Skipped fixtures are excluded, so this
+// holds on Windows (where the file-symlink fixture cannot run) as well as on Linux.
 const EXPECTED_FAILURES = [
   'core/AP-4.1-BOUNDARY-COMPONENT-LOCATION',
   'core/AP-4.1-BOUNDARY-SKILL',
-  'core/AP-8.1-EXTENSIONS-MEMBER-OBJECTS',
 ];
 
 const path = process.argv[2];

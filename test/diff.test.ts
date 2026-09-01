@@ -136,6 +136,57 @@ describe('optional components', () => {
   });
 });
 
+describe('an open rejection', () => {
+  // Where two independent implementations read the spec differently, the corpus records
+  // which way a client went instead of picking a side.
+  const f = fixture({
+    expect: {
+      rejected: null,
+      loaded: { skills: ['alpha'], mcpServers: [] },
+      skipped: [],
+      reported: [],
+    },
+    optional: { rejected: true, reported: ['extensions'] },
+  });
+
+  it('passes a client that loads, and says so', () => {
+    const verdict = diffReport(f, report({ loaded: { skills: ['alpha'], mcpServers: [] } }));
+    expect(verdict.status).toBe('pass');
+    expect(verdict.notes).toContain('the client loads this, and both are conformant');
+  });
+
+  it('passes a client that rejects, and says so', () => {
+    const verdict = diffReport(f, report({ rejected: 'extensions-member-not-an-object' }));
+    expect(verdict.status).toBe('pass');
+    expect(verdict.notes).toContain('the client rejects this, and both are conformant');
+  });
+
+  it('still fails a client that rejects and loads components anyway', () => {
+    const verdict = diffReport(
+      f,
+      report({ rejected: 'nope', loaded: { skills: ['alpha'], mcpServers: [] } }),
+    );
+    expect(verdict.status).toBe('fail');
+    expect(verdict.failures[0]).toContain('expected a rejected plugin to load nothing');
+  });
+
+  it('tolerates the optional reported field either way', () => {
+    const loaded = { loaded: { skills: ['alpha'], mcpServers: [] } };
+    expect(diffReport(f, report({ ...loaded, reported: [{ field: 'extensions' }] })).status).toBe('pass');
+    expect(diffReport(f, report(loaded)).status).toBe('pass');
+    expect(diffReport(f, report({ ...loaded, reported: [{ field: 'extensions' }] })).notes)
+      .toContain('reported includes the optional "extensions"');
+  });
+
+  it('does not tolerate a reported field that is not listed as optional', () => {
+    const verdict = diffReport(
+      f,
+      report({ loaded: { skills: ['alpha'], mcpServers: [] }, reported: [{ field: 'name' }] }),
+    );
+    expect(verdict.status).toBe('fail');
+  });
+});
+
 describe('atLeastOne', () => {
   const f = fixture({
     expect: { rejected: null, loaded: { skills: ['alpha'], mcpServers: ['api'] }, skipped: [], reported: [] },

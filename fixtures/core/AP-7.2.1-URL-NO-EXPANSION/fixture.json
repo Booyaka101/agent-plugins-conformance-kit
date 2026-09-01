@@ -5,7 +5,7 @@
   "title": "placeholder-like text in a url and in headers stays literal",
   "rationale": "Expansion is defined for args, env and cwd only. A client that expands a url here rewrites the endpoint a package declared.",
   "quote": "Clients MUST NOT perform placeholder or environment-variable expansion in `url`, header names, or header values.",
-  "observability": "report",
+  "observability": "partial",
   "expect": {
     "rejected": null,
     "loaded": {
@@ -16,5 +16,11 @@
     },
     "skipped": [],
     "reported": []
-  }
+  },
+  "optional": {
+    "mcpServers": [
+      "literal"
+    ]
+  },
+  "observabilityNote": "The load report shows the entry was accepted. It cannot show the url a client would connect to, so a client that declines to activate an entry carrying placeholder-like text rather than risk expanding it also passes."
 }

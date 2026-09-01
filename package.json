@@ -60,6 +60,7 @@
     "@kuralle-agents/fs": "0.25.0",
     "@kuralle-agents/plugins": "0.25.0",
     "@types/node": "^22.15.3",
+    "pi-agent-plugins": "0.1.8",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }

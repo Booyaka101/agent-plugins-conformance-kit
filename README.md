@@ -87,9 +87,9 @@ use a non-Node adapter.
 
 ## Real output
 
-The run pictured at the top of this file, as text. It drives the published
-[`@kuralle-agents/plugins`](https://www.npmjs.com/package/@kuralle-agents/plugins) 0.25.0
-loader through `adapters/kuralle.mjs`. Both the image and this block come from
+Run against two independently written 1.0.0 clients. This is the first,
+[`@kuralle-agents/plugins`](https://www.npmjs.com/package/@kuralle-agents/plugins) 0.25.0,
+through `adapters/kuralle.mjs`. Both the image above and this block come from
 `npm run capture:images`, which renders real output, so neither can drift from what the
 tool prints:
 
@@ -97,58 +97,64 @@ tool prints:
 $ node dist/cli.js run --adapter adapters/kuralle.mjs --quiet
 apconform 1.0.0  133 fixtures  adapter adapters\kuralle.mjs
 
-SKIP AP-4.1-BOUNDARY-MANIFEST (spec 4.1) this fixture needs a symlink and the platform refused to create one (enable Developer Mode on Windows, or run the suite on Linux)
 FAIL AP-4.1-BOUNDARY-COMPONENT-LOCATION (spec 4.1) expected loaded.skills not to contain [alpha], got [alpha]
 WARN AP-4.1-BOUNDARY-COMPONENT-LOCATION (spec 4.1) expected skipped to contain [skills], got []
+SKIP AP-4.1-BOUNDARY-MANIFEST (spec 4.1) this fixture needs a symlink and the platform refused to create one (enable Developer Mode on Windows, or run the suite on Linux)
 FAIL AP-4.1-BOUNDARY-SKILL (spec 4.1) expected loaded.skills not to contain [escaped], got [alpha, escaped]
 WARN AP-4.1-BOUNDARY-SKILL (spec 4.1) expected skipped to contain [skills/escaped], got []
 WARN AP-7.1-IMMEDIATE-CHILD (spec 7.1) expected skipped not to contain [skills/beta], got [skills/beta]  (core/AP-7.1-IMMEDIATE-CHILD__skill-md-is-directory)
-FAIL AP-8.1-EXTENSIONS-MEMBER-OBJECTS (spec 8.1) expected rejected=<non-null>, got rejected=null
 
-core          122 pass    3 fail    0 error    1 skipped
-disputed        3 pass    0 fail    0 error    0 skipped
+core          122 pass    2 fail    0 error    1 skipped
+disputed        4 pass    0 fail    0 error    0 skipped
 regressions     4 pass    0 fail    0 error    0 skipped
-total         129 pass    3 fail    0 error    1 skipped  3 warnings
+total         130 pass    2 fail    0 error    1 skipped  3 warnings
 ```
 
-129 of 133, and the three failures are real:
+Both failures are the same defect at two levels. §4.1 lists five failure boundaries for a
+path that resolves outside the plugin root. That loader enforces the first, for
+`plugin.json`, and not the two for `skills/`, so a link under `skills/` is followed and
+the skill behind it loads. Reported as
+[kuralle/kuralle-agents#23](https://github.com/kuralle/kuralle-agents/issues/23).
 
-**§4.1 boundary rule 3, `AP-4.1-BOUNDARY-SKILL`.** A directory link under `skills/`
-pointing outside the plugin root is followed, and the skill behind it is loaded. The
-specification says the client MUST skip it. Verified by hand: the discovered `SKILL.md`
-resolves to `<tmp>/outside/escaped/SKILL.md` while the plugin root is `<tmp>/plugin`.
+The `SKIP` needs a file symlink, which Windows refuses without Developer Mode. It runs and
+passes on Linux and macOS, so the totals there are 131 pass, 2 fail, 0 skipped.
 
-**§4.1 boundary rule 2, `AP-4.1-BOUNDARY-COMPONENT-LOCATION`.** Same gap one level up. A
-`skills/` location that is itself a link out of the root should invalidate the component
-type; instead the skills behind it load.
+## The second client is how the corpus was checked
 
-**§5.2 via §8.1, `AP-8.1-EXTENSIONS-MEMBER-OBJECTS`.** `extensions: { "com.example.client":
-"enabled" }` is reported and dropped, and the plugin loads. §8.1's report-and-ignore
-exception covers a non-object `extensions` field, not a non-object member value, so this
-falls back to §5.2 and is fatal. This is exactly the narrow exception being widened by
-accident, which is what makes it worth a fixture.
+A suite that only ever runs against one implementation cannot tell "the client is wrong"
+from "the fixture is wrong". So the corpus is also run against
+[`pi-agent-plugins`](https://www.npmjs.com/package/pi-agent-plugins) 0.1.8, a client
+written by someone else with its own conformance document:
 
-That run is on Windows, where `AP-4.1-BOUNDARY-MANIFEST` reports `SKIP` because it needs a
-file symlink and Windows refuses to create one without Developer Mode. On Linux and macOS
-it runs and passes, so the totals there are 130 pass, 3 fail, 0 skipped. This loader does
-enforce containment on `plugin.json` itself, which makes the two boundary rules it misses
-look more like an oversight than a design choice.
+```
+core          125 pass    0 fail    0 error    0 skipped
+disputed        4 pass    0 fail    0 error    0 skipped
+regressions     4 pass    0 fail    0 error    0 skipped
+total         132 pass    0 fail    0 error    1 skipped  10 warnings
+```
 
-The three `WARN` lines are SHOULD-level, not MUST-level. See "MUST, SHOULD and open
-questions" below.
+It passes everything, including the two §4.1 fixtures the first client fails, which is
+what makes those two a defect in that client rather than an argument in this corpus.
 
-The corpus also records choices the specification leaves open. Against this loader:
-`sse` servers load rather than being skipped, a skill carrying `argument-hint` and
-`disable-model-invocation` loads (the lenient side of oh-my-pi#8853, all 30 of 30), a
-link to a target inside the plugin root is not followed, and `"command": "node server.js
---port 8080"` is accepted as a bare executable name.
+Doing that found three problems in the corpus, all now fixed:
+
+- Two fixtures required a remote MCP entry to be **activated** when the rule under test was
+  only that headers and urls are not expanded. A client that validates such an entry and
+  then declines to connect, for documented safety reasons, is not violating a MUST. One
+  fixture lost the header from its control server, the other became `partial` with the
+  entry optional.
+- `AP-8.1-EXTENSIONS-MEMBER-OBJECTS` was in `core`. Both clients read §8.1's
+  report-and-ignore exception as covering member values, against my stricter reading. Two
+  independent implementations agreeing against me is not a defect in them, so it moved to
+  `disputed` and now accepts either outcome, pending
+  [spec#77](https://github.com/agentplugins/agent-plugins-spec/issues/77).
 
 ## The corpus
 
 ```
 fixtures/
-├── core/          126 fixtures. The specification states the required outcome directly.
-├── disputed/        3 fixtures. More than one outcome is conformant. Recorded, not graded.
+├── core/          125 fixtures. The specification states the required outcome directly.
+├── disputed/        4 fixtures. More than one outcome is conformant. Recorded, not graded.
 └── regressions/     4 fixtures. Ported from a real bug report, with the issue cited.
 ```
 
@@ -220,7 +226,7 @@ settled.
 `PLUGIN_DATA` reach a subprocess environment, and what `${PLUGIN_DATA}` expands to inside
 `args`, are not visible in a report about what loaded. Those fixtures are marked
 `"observability": "partial"` and carry a note saying exactly what is and is not asserted.
-`apconform list` flags them. Eight fixtures are partial; the other 125 are fully asserted.
+`apconform list` flags them. Nine fixtures are partial; the other 124 are fully asserted.
 
 ## Adopting it on a client that already has failures
 
@@ -326,7 +332,7 @@ corpus, so it can wait until 1.1.0 is published and its identifiers resolve.
 
 ```
 npm install
-npm test              # builds, then runs 476 tests
+npm test              # builds, then runs 481 tests
 npm run verify:sources # checks every quote against the live specification
 ```
 
