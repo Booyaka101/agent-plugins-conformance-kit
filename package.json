@@ -1,6 +1,6 @@
 {
   "name": "agent-plugins-conformance-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Conformance test suite for Agent Plugins 1.0.0 client loaders: a fixture corpus, a runner, and an adapter contract.",
   "type": "module",
   "license": "MIT",
