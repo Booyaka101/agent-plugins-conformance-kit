@@ -13,6 +13,12 @@
 - Support `--help` after every command, document command-specific corpus options in
   usage, and validate arguments to help and version aliases.
 
+## 1.0.1 - 2026-10-19
+
+- Correct corpus expectations using two independent client implementations.
+- Record optional rejection and reporting outcomes where the specification permits both interpretations.
+- Publish through the configured npm trusted publisher with current checkout and Node setup actions.
+
 ## 1.0.0 - 2026-09-01
 
 First release.
