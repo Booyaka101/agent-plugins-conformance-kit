@@ -106,4 +106,19 @@ describe('baseline files', () => {
     await writeFile(path, '{"something": "else"}');
     await expect(readBaseline(path)).rejects.toThrow(/not an apconform baseline/);
   });
+
+  it.each([
+    null, [], { fixtures: {} },
+    { ...baseline({}), tool: 'another-tool' },
+    { ...baseline({}), specVersion: '' },
+    { ...baseline({}), specVersion: 1 },
+    { ...baseline({}), fixtures: [] },
+    baseline({ 'core/a': 'failed' as VerdictStatus }),
+    { ...baseline({}), fixtures: { 'core/a': null } },
+    { ...baseline({}), fixtures: { 'core/a': { status: 'fail' } } },
+  ])('rejects malformed baseline data: %j', async (data) => {
+    const path = join(dir, 'malformed.json');
+    await writeFile(path, JSON.stringify(data));
+    await expect(readBaseline(path)).rejects.toThrow(BaselineError);
+  });
 });

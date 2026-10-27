@@ -54,6 +54,17 @@ npm install --save-dev agent-plugins-conformance-kit
 
 Node 22 or newer.
 
+Options are command-specific. Unknown or duplicate options, missing values and unexpected
+arguments exit with code 2 before an adapter runs. Boolean switches such as
+`--strict-reporting` take no value; omit the switch to leave it disabled.
+
+Use `apconform <command> --help` for usage. `--concurrency` must be a positive safe
+integer, and `--timeout` must be an integer from 1 to 2147483647 milliseconds (Node's
+timer limit). `--json`, `--junit` and `--baseline` must use different resolved paths
+so one artifact cannot overwrite another. Symlink and hard-link aliases are not detected.
+Baseline files must contain the tool name, a non-empty `specVersion`, and fixture statuses
+of `pass`, `fail`, `error` or `skipped`.
+
 ## Quick start
 
 Write an adapter. It takes a plugin directory as `argv[2]` and prints one JSON load

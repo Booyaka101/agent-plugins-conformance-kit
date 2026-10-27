@@ -33,6 +33,18 @@ export async function readBaseline(path: string): Promise<Baseline | null> {
   if (typeof fixtures !== 'object' || fixtures === null || Array.isArray(fixtures)) {
     throw new BaselineError(`${path} has no "fixtures" object. It is not an apconform baseline.`);
   }
+  const metadata = parsed as Partial<Baseline>;
+  if (
+    metadata.tool !== 'agent-plugins-conformance-kit' ||
+    typeof metadata.specVersion !== 'string' || metadata.specVersion.trim().length === 0
+  ) {
+    throw new BaselineError(`${path} has invalid tool or specVersion metadata. It is not an apconform baseline.`);
+  }
+  for (const [id, status] of Object.entries(fixtures)) {
+    if (!['pass', 'fail', 'error', 'skipped'].includes(status)) {
+      throw new BaselineError(`${path} has invalid status for fixture "${id}". Expected pass, fail, error or skipped.`);
+    }
+  }
   return parsed as Baseline;
 }
 

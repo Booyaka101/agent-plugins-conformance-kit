@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.2 - 2026-10-27
+
+- Reject unknown or duplicate CLI options, values on boolean switches and extra positional
+  arguments before running adapters, so a misspelled CI flag cannot silently disable a check.
+- Require `--baseline` with `--update-baseline`, and reject a missing value for
+  `verify --fixtures` instead of checking the default corpus.
+- Reject fractional or unsafe CLI concurrency and timeout values, including timeouts
+  above Node's timer limit that would otherwise be clamped to 1 ms.
+- Reject matching resolved paths for JSON, JUnit and baseline artifacts before a run.
+- Validate baseline metadata and fixture statuses before using a baseline.
+- Support `--help` after every command, document command-specific corpus options in
+  usage, and validate arguments to help and version aliases.
+
 ## 1.0.1 - 2026-10-19
 
 - Correct corpus expectations using two independent client implementations.

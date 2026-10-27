@@ -25,9 +25,9 @@ const USAGE = `apconform ${version} - Agent Plugins 1.0.0 client conformance sui
 
 Usage:
   apconform run --adapter <path> [options]
-  apconform list [options]
+  apconform list [--only <groups>] [--fixture <substring>] [--fixtures <dir>]
   apconform rules [--json]
-  apconform verify
+  apconform verify [--fixtures <dir>]
   apconform explain <rule-id>
   apconform show <fixture-id>
 
@@ -41,13 +41,15 @@ Run options:
   --json <file>          Write the full machine-readable result to this file.
   --junit <file>         Write JUnit XML, for CI systems that render test reports.
   --strict-reporting     Treat SHOULD-report mismatches in "skipped" as failures.
-  --timeout <ms>         Per-fixture adapter timeout. Default: 30000.
-  --concurrency <n>      Adapters to run at once. Default: min(8, cpus).
+  --timeout <ms>         Integer milliseconds, 1 to 2147483647. Default: 30000.
+  --concurrency <n>      Positive integer workers. Default: min(8, cpus).
   --fixtures <dir>       Use a different corpus root.
   --baseline <file>      Gate on change instead of on the total. Only fixtures that
                          regressed against this file fail the run.
   --update-baseline      Write the current result to --baseline and exit 0.
   --quiet                Only print the summary and any failures.
+
+Use --help after any command to show this help.
 
 Exit codes: 0 all passed, 1 conformance failures or adapter errors, 2 could not run.
 `;
@@ -59,7 +61,9 @@ interface Args {
 }
 
 function parseArgs(argv: string[]): Args {
-  const [command = 'help', ...rest] = argv;
+  const [rawCommand = 'help', ...rest] = argv;
+  const command = ['--help', '-h'].includes(rawCommand) ? 'help'
+    : ['--version', '-v'].includes(rawCommand) ? 'version' : rawCommand;
   const flags = new Map<string, string | true>();
   const positional: string[] = [];
   for (let i = 0; i < rest.length; i++) {
@@ -69,16 +73,18 @@ function parseArgs(argv: string[]): Args {
       continue;
     }
     const eq = token.indexOf('=');
+    const name = token.slice(2, eq === -1 ? undefined : eq);
+    if (flags.has(name)) throw new UsageError(`duplicate option --${name}`);
     if (eq !== -1) {
-      flags.set(token.slice(2, eq), token.slice(eq + 1));
+      flags.set(name, token.slice(eq + 1));
       continue;
     }
     const next = rest[i + 1];
     if (next !== undefined && !next.startsWith('--')) {
-      flags.set(token.slice(2), next);
+      flags.set(name, next);
       i++;
     } else {
-      flags.set(token.slice(2), true);
+      flags.set(name, true);
     }
   }
   return { command, flags, positional };
@@ -104,17 +110,70 @@ function optionalString(flags: Map<string, string | true>, name: string): string
   return value;
 }
 
-function optionalNumber(flags: Map<string, string | true>, name: string): number | undefined {
+function optionalNumber(
+  flags: Map<string, string | true>, name: string, max = Number.MAX_SAFE_INTEGER,
+): number | undefined {
   const value = optionalString(flags, name);
   if (value === undefined) return undefined;
   const parsed = Number(value);
-  if (!Number.isFinite(parsed) || parsed <= 0) {
-    throw new UsageError(`--${name} must be a positive number, got "${String(value)}"`);
+  if (!Number.isSafeInteger(parsed) || parsed <= 0 || parsed > max) {
+    throw new UsageError(`--${name} must be an integer between 1 and ${max}, got "${value}"`);
   }
   return parsed;
 }
 
 class UsageError extends Error {}
+
+const CORPUS_OPTIONS = ['only', 'fixture', 'fixtures'];
+const COMMAND_OPTIONS: Record<string, { values: string[]; switches: string[]; positional?: boolean }> = {
+  run: {
+    values: [
+      ...CORPUS_OPTIONS, 'adapter', 'adapter-exec', 'timeout', 'concurrency', 'json', 'junit', 'baseline',
+    ],
+    switches: ['quiet', 'strict-reporting', 'update-baseline'],
+  },
+  list: { values: CORPUS_OPTIONS, switches: [] },
+  rules: { values: [], switches: ['json'] },
+  verify: { values: ['fixtures'], switches: [] },
+  show: { values: [], switches: [], positional: true },
+  explain: { values: [], switches: [], positional: true },
+  help: { values: [], switches: [] },
+  version: { values: [], switches: [] },
+};
+
+function validateArgs(args: Args): void {
+  const options = Object.hasOwn(COMMAND_OPTIONS, args.command) ? COMMAND_OPTIONS[args.command] : undefined;
+  if (options === undefined) throw new UsageError(`unknown command "${args.command}"`);
+  for (const [name, value] of args.flags) {
+    if (options.values.includes(name)) {
+      optionalString(args.flags, name);
+    } else if (name === 'help' || options.switches.includes(name)) {
+      if (value !== true) throw new UsageError(`--${name} does not take a value`);
+    } else {
+      throw new UsageError(`unknown option --${name} for ${args.command}`);
+    }
+  }
+  const extra = args.positional[options.positional ? 1 : 0];
+  if (extra !== undefined) throw new UsageError(`unexpected argument "${extra}" for ${args.command}`);
+  if (args.flags.has('update-baseline') && !args.flags.has('baseline')) {
+    throw new UsageError('--update-baseline requires --baseline');
+  }
+}
+
+function validateReportPaths(flags: Map<string, string | true>): void {
+  const paths = new Map<string, string>();
+  for (const name of ['baseline', 'json', 'junit']) {
+    const value = optionalString(flags, name);
+    if (value === undefined) continue;
+    const path = resolve(value);
+    const key = process.platform === 'win32' ? path.toLowerCase() : path;
+    const previous = paths.get(key);
+    if (previous !== undefined) {
+      throw new UsageError(`--${previous} and --${name} must use different paths`);
+    }
+    paths.set(key, name);
+  }
+}
 
 function parseGroups(flags: Map<string, string | true>): FixtureGroup[] {
   const raw = optionalString(flags, 'only');
@@ -148,13 +207,14 @@ async function commandRun(args: Args): Promise<number> {
   // never lands halfway through a run.
   const adapter = requireString(args.flags, 'adapter');
   const adapterExec = optionalString(args.flags, 'adapter-exec');
-  const timeoutMs = optionalNumber(args.flags, 'timeout');
+  const timeoutMs = optionalNumber(args.flags, 'timeout', 2_147_483_647);
   const concurrency = optionalNumber(args.flags, 'concurrency');
   const jsonPath = optionalString(args.flags, 'json');
   const junitPath = optionalString(args.flags, 'junit');
   const baselinePath = optionalString(args.flags, 'baseline');
   const updateBaseline = args.flags.get('update-baseline') === true;
   const quiet = args.flags.get('quiet') === true;
+  validateReportPaths(args.flags);
 
   // The baseline is read before the run, so a missing or corrupt one is reported in a
   // second rather than after the whole corpus, and so a failure the baseline already knows
@@ -418,6 +478,11 @@ async function commandVerify(args: Args): Promise<number> {
 
 export async function main(argv: string[]): Promise<number> {
   const args = parseArgs(argv);
+  validateArgs(args);
+  if (args.flags.has('help')) {
+    process.stdout.write(USAGE);
+    return 0;
+  }
   switch (args.command) {
     case 'run':
       return commandRun(args);
@@ -432,13 +497,9 @@ export async function main(argv: string[]): Promise<number> {
     case 'show':
       return commandShow(args);
     case 'help':
-    case '--help':
-    case '-h':
       process.stdout.write(USAGE);
       return 0;
     case 'version':
-    case '--version':
-    case '-v':
       process.stdout.write(`${version}\n`);
       return 0;
     default:
