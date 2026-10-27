@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.2 - 2026-10-27
 
 - Reject unknown or duplicate CLI options, values on boolean switches and extra positional
   arguments before running adapters, so a misspelled CI flag cannot silently disable a check.
