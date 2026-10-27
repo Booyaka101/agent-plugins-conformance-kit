@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -181,6 +181,146 @@ describe('the CLI', () => {
     expect(result.code).toBe(2);
     expect(result.stderr).toContain('--only accepts');
     expect(result.stderr).toContain('Usage:');
+  });
+
+  it.each([
+    ['concurrency', '0.5'], ['concurrency', '1.5'], ['concurrency', '9007199254740992'],
+    ['timeout', '0.5'], ['timeout', '2147483648'], ['timeout', 'Infinity'],
+  ])('rejects unsafe --%s values before running: %s', async (flag, value) => {
+    const result = await run(['run', '--adapter', ECHO, `--${flag}`, value]);
+    expect(result.code).toBe(2);
+    expect(result.stderr).toContain(`--${flag} must be`);
+    expect(result.stdout).toBe('');
+  });
+
+  it.each([['json', 'junit'], ['baseline', 'json'], ['baseline', 'junit']])(
+    'rejects colliding --%s and --%s paths before running',
+    async (first, second) => {
+      const path = join(out, 'same-output.json');
+      await writeFile(path, 'preserve existing contents');
+      const result = await run([
+        'run', '--adapter', ECHO, `--${first}`, `${out}/./same-output.json`,
+        `--${second}`, path,
+      ]);
+      expect(result.code).toBe(2);
+      expect(result.stderr).toContain('must use different paths');
+      expect(result.stdout).toBe('');
+      expect(await readFile(path, 'utf8')).toBe('preserve existing contents');
+    },
+  );
+
+  it('accepts integer execution options including the maximum supported timeout', async () => {
+    const result = await run([
+      'run', '--adapter', ECHO, '--fixture', 'AP-7.1-DEPTH',
+      '--concurrency=2', '--timeout=2147483647', '--quiet',
+    ]);
+    expect(result.code).toBe(0);
+    expect(result.stderr).toBe('');
+    expect(result.stdout).toMatch(/total\s+3 pass\s+0 fail/);
+  });
+
+  it.each(['run', 'list', 'verify', 'rules', 'show', 'explain'])(
+    'shows help for %s without requiring command arguments',
+    async (command) => {
+      const result = await run([command, '--help']);
+      expect(result.code).toBe(0);
+      expect(result.stdout).toContain('Usage:');
+      expect(result.stderr).toBe('');
+    },
+  );
+
+  it.each([
+    ['help', '--typo'], ['--help', 'unexpected'], ['version', '--typo'], ['-v', 'unexpected'],
+    ['rules', '--json=false'], ['run', '--help=false'], ['constructor'], ['__proto__'],
+  ])('rejects invalid help, version and command arguments: %s', async (...args) => {
+    const result = await run(args);
+    expect(result.code).toBe(2);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toContain('apconform:');
+    expect(result.stderr).not.toContain('TypeError');
+  });
+
+  it.each([[], ['help'], ['--help'], ['-h'], ['version'], ['--version'], ['-v']])(
+    'preserves help and version aliases: %s', async (...args) => {
+      const result = await run(args);
+      expect(result.code).toBe(0);
+      expect(result.stderr).toBe('');
+      expect(result.stdout).not.toBe('');
+    },
+  );
+
+  it.each([
+    ['run', '--adapter', ECHO, '--fixture', 'AP-7.1-DEPTH', '--strict-repoting'],
+    ['list', '--strict-reporting'],
+    ['rules', '--adapter', ECHO],
+    ['verify', '--fixture', 'AP-7.1-DEPTH'],
+    ['show', 'AP-7.1-DEPTH', '--fixtures', 'missing-corpus'],
+    ['explain', 'AP-7.1-DEPTH', '--json'],
+  ])('rejects unsupported flags before running: %s', async (...args) => {
+    const result = await run(args);
+    expect(result.code).toBe(2);
+    expect(result.stderr).toContain('unknown option');
+    expect(result.stdout).toBe('');
+  });
+
+  it.each(['quiet', 'strict-reporting', 'update-baseline'])(
+    'rejects an explicit value for boolean --%s',
+    async (flag) => {
+      const result = await run(['run', '--adapter', ECHO, '--fixture', 'AP-7.1-DEPTH', `--${flag}=false`]);
+      expect(result.code).toBe(2);
+      expect(result.stderr).toContain(`--${flag} does not take a value`);
+      expect(result.stdout).toBe('');
+    },
+  );
+
+  it('rejects duplicate options rather than silently overwriting them', async () => {
+    const result = await run(['list', '--only', 'core', '--only=disputed']);
+    expect(result.code).toBe(2);
+    expect(result.stderr).toContain('duplicate option --only');
+    expect(result.stdout).toBe('');
+  });
+
+  it.each([
+    ['run', '--adapter', ECHO, '--fixture', 'AP-7.1-DEPTH', 'unexpected'],
+    ['list', 'unexpected'],
+    ['show', 'AP-7.1-DEPTH', 'unexpected'],
+    ['explain', 'AP-7.1-DEPTH', 'unexpected'],
+  ])('rejects extra positional arguments: %s', async (...args) => {
+    const result = await run(args);
+    expect(result.code).toBe(2);
+    expect(result.stderr).toContain('unexpected argument');
+    expect(result.stdout).toBe('');
+  });
+
+  it('requires --baseline when updating a baseline', async () => {
+    const result = await run(['run', '--adapter', ECHO, '--update-baseline']);
+    expect(result.code).toBe(2);
+    expect(result.stderr).toContain('--update-baseline requires --baseline');
+    expect(result.stdout).toBe('');
+  });
+
+  it('requires a value for verify --fixtures instead of verifying the default corpus', async () => {
+    const result = await run(['verify', '--fixtures']);
+    expect(result.code).toBe(2);
+    expect(result.stderr).toContain('--fixtures requires a value');
+    expect(result.stdout).toBe('');
+  });
+
+  it('rejects a separate boolean value instead of disabling strict reporting', async () => {
+    const result = await run(['run', '--adapter', ECHO, '--strict-reporting', 'false']);
+    expect(result.code).toBe(2);
+    expect(result.stderr).toContain('--strict-reporting does not take a value');
+    expect(result.stdout).toBe('');
+  });
+
+  it('accepts equals-style values and boolean rules --json', async () => {
+    const listed = await run(['list', '--only=regressions']);
+    expect(listed.code).toBe(0);
+    expect(listed.stdout).toContain('4 fixtures');
+
+    const rules = await run(['rules', '--json']);
+    expect(rules.code).toBe(0);
+    expect(JSON.parse(rules.stdout).specVersion).toBe('1.0.0');
   });
 
   it('exits 2 when no fixture matches the filter', async () => {
