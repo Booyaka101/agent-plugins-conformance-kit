@@ -29,6 +29,32 @@ describe('adapter output limits', () => {
     expect(result.code).toBe(0);
     expect(result.stdout.length).toBe(cap);
   });
+
+  it('honors the timeout when an adapter leaves a descendant holding its pipes', async () => {
+    const path = join(root, 'adapter.mjs');
+    const pidFile = join(root, 'child.pid');
+    await writeFile(path, `
+      import { spawn } from 'node:child_process';
+      import { writeFileSync } from 'node:fs';
+      const child = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 10000)'], { stdio: ['ignore', 'inherit', 'inherit'] });
+      writeFileSync(${JSON.stringify(pidFile)}, String(child.pid));
+      child.unref();
+      // Windows does not retain the inherited pipes after the adapter exits.
+      if (process.platform === 'win32') setTimeout(() => {}, 10000);
+    `);
+    const started = Date.now();
+    try {
+      const result = await runAdapter(adapterLaunch(path), root, 1000);
+      expect(result.timedOut).toBe(true);
+      expect(Date.now() - started).toBeLessThan(5000);
+    } finally {
+      // Stop only the exact descendant this test started, never an image-name match.
+      const pid = Number(await readFile(pidFile, 'utf8'));
+      try { process.kill(pid, 'SIGKILL'); } catch (err) {
+        if ((err as NodeJS.ErrnoException).code !== 'ESRCH') throw err;
+      }
+    }
+  });
 });
 
 describe('staged fixture link containment', () => {

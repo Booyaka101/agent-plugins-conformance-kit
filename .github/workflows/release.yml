@@ -23,7 +23,8 @@ on:
         required: true
 
 permissions:
-  contents: write
+  contents: read
+  actions: read
   id-token: write
 
 jobs:
@@ -32,12 +33,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/tags/{0}', inputs.tag) || github.ref }}
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version: '22'
           registry-url: https://registry.npmjs.org
           cache: npm
+
+      - name: Require a matching tag and green CI on this exact commit
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/check-release.mjs
 
       - name: Meet the trusted-publishing version floor
         run: |
@@ -50,15 +58,6 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run verify:sources
-
-      # A tag that disagrees with package.json publishes the wrong thing under the right
-      # name, and npm will not let you take it back.
-      - name: The tag must match the version in package.json
-        run: |
-          tag="${{ github.event.inputs.tag || github.ref_name }}"
-          version="v$(node -p "require('./package.json').version")"
-          echo "tag=$tag package.json=$version"
-          test "$tag" = "$version"
 
       - run: npm publish --access public
 

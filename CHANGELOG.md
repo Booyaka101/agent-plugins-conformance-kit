@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Keep Action installation and setup failures fatal in report-only mode, reject runs
+  without a summary, support absolute artifact paths and clean up per-run scratch files.
+- Require matching release tags and the latest successful main-branch CI on the exact
+  release commit before publication, with read-only repository and Actions permissions.
+- Validate custom fixture manifests and library execution options before running adapters;
+  normalize omitted expectation reporting arrays.
+- Reject unknown nested report keys and align the JSON schema with the established
+  optional `skipped` and `reported` arrays.
+- Close adapter output pipes on timeout or output overflow so inherited descendant
+  handles cannot keep a run waiting. Adapters remain responsible for descendant cleanup.
 - Enforce the adapter output limit in UTF-8 bytes for both stdout and stderr, including
   the final write, instead of silently truncating stderr or counting characters.
 - Reject staged link destinations outside the plugin before removing anything, including

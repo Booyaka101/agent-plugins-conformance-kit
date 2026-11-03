@@ -38,6 +38,8 @@ npx apconform run --adapter ./my-adapter.mjs
 ```
 
 `report.schema.json` in this package is the machine-readable version.
+`skipped` and `reported` may be omitted and default to empty arrays. Unknown keys are
+rejected at every report object level, including entries in those arrays.
 
 **`rejected`** is `null` when the plugin loaded, and any short string when it did not. The
 runner compares null against non-null and nothing else, because the specification defines
@@ -74,6 +76,8 @@ warning, never a failure. Most adapters leave it out.
 - The plugin directory is an absolute path that exists.
 - One process per fixture. Nothing is reused between fixtures.
 - Your process is killed after `--timeout` milliseconds, 30 seconds by default.
+  The runner also closes its output pipes so inherited handles cannot prolong the wait.
+  Adapters must clean up any descendants they start; the runner does not kill process trees.
 - Each output stream is limited to 8 MiB of UTF-8 data. Exceeding either limit kills
   the adapter and records an error.
 - Anything on stderr is ignored unless the adapter also fails, in which case the last few
