@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Enforce the adapter output limit in UTF-8 bytes for both stdout and stderr, including
+  the final write, instead of silently truncating stderr or counting characters.
+- Reject staged link destinations outside the plugin before removing anything, including
+  destinations redirected by an earlier directory link.
+- Count unexpected fixture staging failures as errors rather than successful skips.
+- Resolve relative corpus roots so library callers also receive absolute plugin paths.
+- Update Vitest to the patched 4.1 release line and refresh vulnerable development
+  dependencies. Production dependencies are unchanged.
+
 ## 1.0.2 - 2026-10-27
 
 - Reject unknown or duplicate CLI options, values on boolean switches and extra positional

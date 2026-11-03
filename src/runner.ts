@@ -1,8 +1,8 @@
 import { spawn } from 'node:child_process';
-import { cp, mkdtemp, readdir, readFile, rm, symlink, stat } from 'node:fs/promises';
+import { cp, mkdtemp, readdir, readFile, realpath, rm, symlink, stat } from 'node:fs/promises';
 import { existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { availableParallelism } from 'node:os';
 import { parseLoadReport, validateLoadReport } from './report.js';
 import {
@@ -33,7 +33,7 @@ export class CorpusError extends Error {}
 export class AdapterError extends Error {}
 
 export function fixtureRoot(root?: string): string {
-  return root ?? join(packageRoot, 'fixtures');
+  return resolve(root ?? join(packageRoot, 'fixtures'));
 }
 
 export async function loadCorpus(options: CorpusOptions = {}): Promise<Fixture[]> {
@@ -163,21 +163,24 @@ export function runAdapter(
     let stderr = '';
     let timedOut = false;
     let overflowed = false;
+    const bytes = { stdout: 0, stderr: 0 };
     child.stdout.setEncoding('utf8');
     child.stderr.setEncoding('utf8');
     // A load report is a few kilobytes. An adapter that streams without end must not take
     // the runner down with it.
-    child.stdout.on('data', (chunk: string) => {
-      if (stdout.length > MAX_OUTPUT_BYTES) {
+    const capture = (stream: 'stdout' | 'stderr', chunk: string): void => {
+      if (overflowed) return;
+      bytes[stream] += Buffer.byteLength(chunk, 'utf8');
+      if (bytes[stream] > MAX_OUTPUT_BYTES) {
         overflowed = true;
         child.kill('SIGKILL');
         return;
       }
-      stdout += chunk;
-    });
-    child.stderr.on('data', (chunk: string) => {
-      if (stderr.length <= MAX_OUTPUT_BYTES) stderr += chunk;
-    });
+      if (stream === 'stdout') stdout += chunk;
+      else stderr += chunk;
+    };
+    child.stdout.on('data', (chunk: string) => capture('stdout', chunk));
+    child.stderr.on('data', (chunk: string) => capture('stderr', chunk));
 
     const timer = setTimeout(() => {
       timedOut = true;
@@ -214,8 +217,14 @@ async function stage(fixture: Fixture): Promise<{ pluginDir: string; cleanup: ()
     // Kept beside the staged plugin, never inside it, so the layout an adapter sees
     // matches an unstaged fixture exactly.
     await cp(join(fixture.dir, 'fixture.json'), join(base, 'fixture.json'));
+    const pluginRoot = await realpath(join(base, 'plugin'));
     for (const link of fixture.links) {
-      const linkPath = join(base, 'plugin', link.path);
+      const linkPath = resolve(pluginRoot, link.path);
+      // Check the parent on disk too: an earlier link can redirect a later removal.
+      if (!isWithin(pluginRoot, linkPath) ||
+          !isWithin(pluginRoot, await realpath(dirname(linkPath)), true)) {
+        throw new CorpusError(`link path must stay inside the staged plugin: ${link.path}`);
+      }
       await rm(linkPath, { recursive: true, force: true });
       await createLink(link.target, linkPath, link.type);
     }
@@ -224,6 +233,12 @@ async function stage(fixture: Fixture): Promise<{ pluginDir: string; cleanup: ()
     await cleanup();
     throw err;
   }
+}
+
+function isWithin(root: string, path: string, allowRoot = false): boolean {
+  const rel = relative(root, path);
+  return (allowRoot || rel !== '') && rel !== '..' &&
+    !rel.startsWith(`..${sep}`) && !isAbsolute(rel);
 }
 
 async function createLink(target: string, linkPath: string, type: 'file' | 'dir'): Promise<void> {
@@ -276,12 +291,13 @@ export async function runFixture(
   try {
     staged = await stage(fixture);
   } catch (err) {
+    if (err instanceof CorpusError) throw err;
     const code = (err as NodeJS.ErrnoException).code;
     const reason =
       code === 'EPERM'
         ? 'this fixture needs a symlink and the platform refused to create one (enable Developer Mode on Windows, or run the suite on Linux)'
         : `could not stage fixture: ${err instanceof Error ? err.message : String(err)}`;
-    return { ...base, status: 'skipped', error: reason, durationMs: Date.now() - started };
+    return { ...base, status: code === 'EPERM' ? 'skipped' : 'error', error: reason, durationMs: Date.now() - started };
   }
 
   try {
@@ -300,7 +316,7 @@ export async function runFixture(
       return {
         ...base,
         status: 'error',
-        error: `adapter printed more than ${MAX_OUTPUT_BYTES / 1024 / 1024} MB to stdout and was killed`,
+        error: `adapter printed more than ${MAX_OUTPUT_BYTES / 1024 / 1024} MB to stdout or stderr and was killed`,
         durationMs,
       };
     }
