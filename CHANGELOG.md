@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.3 - 2026-11-03
 
 - Keep Action installation and setup failures fatal in report-only mode, reject runs
   without a summary, support absolute artifact paths and clean up per-run scratch files.
