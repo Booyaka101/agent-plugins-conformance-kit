@@ -1,10 +1,11 @@
 import { spawn } from 'node:child_process';
-import { cp, mkdtemp, readdir, readFile, rm, symlink, stat } from 'node:fs/promises';
+import { cp, mkdtemp, readdir, readFile, realpath, rm, symlink, stat } from 'node:fs/promises';
 import { existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { availableParallelism } from 'node:os';
 import { parseLoadReport, validateLoadReport } from './report.js';
+import { isPositiveInteger, MAX_TIMEOUT_MS } from './options.js';
 import {
   diffReport,
   summarize,
@@ -33,12 +34,12 @@ export class CorpusError extends Error {}
 export class AdapterError extends Error {}
 
 export function fixtureRoot(root?: string): string {
-  return root ?? join(packageRoot, 'fixtures');
+  return resolve(root ?? join(packageRoot, 'fixtures'));
 }
 
 export async function loadCorpus(options: CorpusOptions = {}): Promise<Fixture[]> {
   const root = fixtureRoot(options.root);
-  if (!existsSync(root)) {
+  if (!(await isDirectory(root))) {
     throw new CorpusError(`fixture directory not found: ${root}`);
   }
   const rules = ruleIndex(loadRules());
@@ -64,12 +65,14 @@ export async function loadCorpus(options: CorpusOptions = {}): Promise<Fixture[]
           `${group}/${entry.name}/fixture.json is not valid JSON: ${err instanceof Error ? err.message : String(err)}`,
         );
       }
+      const shapeError = fixtureShapeError(raw);
+      if (shapeError) throw new CorpusError(`${group}/${entry.name}/fixture.json ${shapeError}`);
       const fixture = raw as Omit<Fixture, 'id' | 'group' | 'dir'>;
       const rule = rules.get(fixture.ruleId);
       if (!rule) {
         throw new CorpusError(`${group}/${entry.name} names unknown rule ${fixture.ruleId}`);
       }
-      if (!existsSync(join(dir, 'plugin'))) {
+      if (!(await isDirectory(join(dir, 'plugin')))) {
         throw new CorpusError(`${group}/${entry.name} has no plugin/ directory`);
       }
       const shape = validateLoadReport(fixture.expect);
@@ -78,12 +81,48 @@ export async function loadCorpus(options: CorpusOptions = {}): Promise<Fixture[]
           `${group}/${entry.name}/fixture.json "expect" is not a load report: ${shape.error}`,
         );
       }
-      fixtures.push({ ...fixture, id: `${group}/${entry.name}`, group, dir });
+      fixtures.push({ ...fixture, expect: shape.report, id: `${group}/${entry.name}`, group, dir });
     }
   }
 
   const filter = options.filter?.toLowerCase();
   return filter ? fixtures.filter((f) => f.id.toLowerCase().includes(filter)) : fixtures;
+}
+
+function fixtureShapeError(raw: unknown): string | undefined {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return 'must be an object';
+  const value = raw as Record<string, unknown>;
+  for (const field of ['ruleId', 'confidence', 'spec', 'title', 'rationale', 'quote', 'observability']) {
+    if (typeof value[field] !== 'string') return `"${field}" must be a string`;
+  }
+  for (const field of ['issue', 'observabilityNote']) {
+    if (value[field] !== undefined && typeof value[field] !== 'string') return `"${field}" must be a string`;
+  }
+  if (!['core', 'disputed'].includes(value['confidence'] as string)) return 'has invalid confidence';
+  if (!['report', 'partial'].includes(value['observability'] as string)) return 'has invalid observability';
+  for (const field of ['optional', 'atLeastOne']) {
+    const sets = value[field];
+    if (sets === undefined) continue;
+    if (typeof sets !== 'object' || sets === null || Array.isArray(sets)) return `"${field}" must be an object`;
+    for (const [name, members] of Object.entries(sets)) {
+      if (name === 'rejected') {
+        if (typeof members !== 'boolean') return `"${field}.rejected" must be a boolean`;
+      } else if (!['skills', 'mcpServers', 'reported'].includes(name) ||
+          !Array.isArray(members) || !members.every((item) => typeof item === 'string')) {
+        return `"${field}.${name}" must name a supported array of strings`;
+      }
+    }
+  }
+  const links = value['links'];
+  if (links !== undefined) {
+    if (!Array.isArray(links)) return '"links" must be an array';
+    for (const link of links) {
+      if (typeof link !== 'object' || link === null ||
+          typeof link.path !== 'string' || !link.path || typeof link.target !== 'string' || !link.target ||
+          !['file', 'dir'].includes(link.type)) return 'has an invalid link (path, target and type are required)';
+    }
+  }
+  return undefined;
 }
 
 interface Launch {
@@ -147,6 +186,10 @@ export function runAdapter(
   timeoutMs: number,
 ): Promise<AdapterResult> {
   return new Promise((resolvePromise, rejectPromise) => {
+    if (!isPositiveInteger(timeoutMs, MAX_TIMEOUT_MS)) {
+      rejectPromise(new AdapterError(`timeoutMs must be an integer between 1 and ${MAX_TIMEOUT_MS}`));
+      return;
+    }
     let child;
     try {
       child = spawn(launch.command, launchArgs(launch, pluginDir), {
@@ -163,25 +206,35 @@ export function runAdapter(
     let stderr = '';
     let timedOut = false;
     let overflowed = false;
+    const bytes = { stdout: 0, stderr: 0 };
+    const stop = (): void => {
+      child.kill('SIGKILL');
+      // A descendant may still hold these pipes after the adapter exits. Waiting for
+      // their EOF would defeat both the timeout and output cap.
+      child.stdout.destroy();
+      child.stderr.destroy();
+    };
     child.stdout.setEncoding('utf8');
     child.stderr.setEncoding('utf8');
     // A load report is a few kilobytes. An adapter that streams without end must not take
     // the runner down with it.
-    child.stdout.on('data', (chunk: string) => {
-      if (stdout.length > MAX_OUTPUT_BYTES) {
+    const capture = (stream: 'stdout' | 'stderr', chunk: string): void => {
+      if (overflowed) return;
+      bytes[stream] += Buffer.byteLength(chunk, 'utf8');
+      if (bytes[stream] > MAX_OUTPUT_BYTES) {
         overflowed = true;
-        child.kill('SIGKILL');
+        stop();
         return;
       }
-      stdout += chunk;
-    });
-    child.stderr.on('data', (chunk: string) => {
-      if (stderr.length <= MAX_OUTPUT_BYTES) stderr += chunk;
-    });
+      if (stream === 'stdout') stdout += chunk;
+      else stderr += chunk;
+    };
+    child.stdout.on('data', (chunk: string) => capture('stdout', chunk));
+    child.stderr.on('data', (chunk: string) => capture('stderr', chunk));
 
     const timer = setTimeout(() => {
       timedOut = true;
-      child.kill('SIGKILL');
+      stop();
     }, timeoutMs);
 
     child.on('error', (err) => {
@@ -214,8 +267,14 @@ async function stage(fixture: Fixture): Promise<{ pluginDir: string; cleanup: ()
     // Kept beside the staged plugin, never inside it, so the layout an adapter sees
     // matches an unstaged fixture exactly.
     await cp(join(fixture.dir, 'fixture.json'), join(base, 'fixture.json'));
+    const pluginRoot = await realpath(join(base, 'plugin'));
     for (const link of fixture.links) {
-      const linkPath = join(base, 'plugin', link.path);
+      const linkPath = resolve(pluginRoot, link.path);
+      // Check the parent on disk too: an earlier link can redirect a later removal.
+      if (!isWithin(pluginRoot, linkPath) ||
+          !isWithin(pluginRoot, await realpath(dirname(linkPath)), true)) {
+        throw new CorpusError(`link path must stay inside the staged plugin: ${link.path}`);
+      }
       await rm(linkPath, { recursive: true, force: true });
       await createLink(link.target, linkPath, link.type);
     }
@@ -224,6 +283,12 @@ async function stage(fixture: Fixture): Promise<{ pluginDir: string; cleanup: ()
     await cleanup();
     throw err;
   }
+}
+
+function isWithin(root: string, path: string, allowRoot = false): boolean {
+  const rel = relative(root, path);
+  return (allowRoot || rel !== '') && rel !== '..' &&
+    !rel.startsWith(`..${sep}`) && !isAbsolute(rel);
 }
 
 async function createLink(target: string, linkPath: string, type: 'file' | 'dir'): Promise<void> {
@@ -276,12 +341,13 @@ export async function runFixture(
   try {
     staged = await stage(fixture);
   } catch (err) {
+    if (err instanceof CorpusError) throw err;
     const code = (err as NodeJS.ErrnoException).code;
     const reason =
       code === 'EPERM'
         ? 'this fixture needs a symlink and the platform refused to create one (enable Developer Mode on Windows, or run the suite on Linux)'
         : `could not stage fixture: ${err instanceof Error ? err.message : String(err)}`;
-    return { ...base, status: 'skipped', error: reason, durationMs: Date.now() - started };
+    return { ...base, status: code === 'EPERM' ? 'skipped' : 'error', error: reason, durationMs: Date.now() - started };
   }
 
   try {
@@ -300,7 +366,7 @@ export async function runFixture(
       return {
         ...base,
         status: 'error',
-        error: `adapter printed more than ${MAX_OUTPUT_BYTES / 1024 / 1024} MB to stdout and was killed`,
+        error: `adapter printed more than ${MAX_OUTPUT_BYTES / 1024 / 1024} MB to stdout or stderr and was killed`,
         durationMs,
       };
     }
@@ -338,6 +404,12 @@ export async function runFixture(
 }
 
 export async function runSuite(fixtures: Fixture[], options: RunOptions): Promise<RunResult> {
+  if (options.concurrency !== undefined && !isPositiveInteger(options.concurrency)) {
+    throw new AdapterError('concurrency must be a positive safe integer');
+  }
+  if (options.timeoutMs !== undefined && !isPositiveInteger(options.timeoutMs, MAX_TIMEOUT_MS)) {
+    throw new AdapterError(`timeoutMs must be an integer between 1 and ${MAX_TIMEOUT_MS}`);
+  }
   const adapterPath = resolve(options.adapter);
   if (!existsSync(adapterPath)) {
     throw new AdapterError(`adapter not found: ${options.adapter}`);

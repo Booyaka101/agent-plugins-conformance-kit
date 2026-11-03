@@ -50,7 +50,7 @@ inputs:
     required: false
     default: ''
   fail-on-error:
-    description: Fail the step when a fixture fails. Set to false to report without gating.
+    description: Fail the step when a fixture fails. False reports without gating, but setup failures still fail the step.
     required: false
     default: 'true'
 
@@ -91,18 +91,22 @@ runs:
         # directory and pass absolute paths. Inside a checkout that happens to contain a
         # package of the same name, the local one would otherwise shadow the published one.
         work="$(mktemp -d)"
+        trap 'rm -rf -- "$work"' EXIT
         # npx roots a relative spec at the nearest ancestor manifest, so give it one here.
         printf '{"name":"apconform-run","version":"1.0.0","private":true}' > "$work/package.json"
-        adapter_abs="$(cd "$(dirname "$APCONFORM_ADAPTER")" && pwd)/$(basename "$APCONFORM_ADAPTER")"
-        json_abs="$GITHUB_WORKSPACE/$APCONFORM_JSON"
+        absolute_path() {
+          APCONFORM_PATH="$1" node -e 'console.log(require("node:path").resolve(process.env.GITHUB_WORKSPACE, process.env.APCONFORM_PATH))'
+        }
+        adapter_abs="$(absolute_path "$APCONFORM_ADAPTER")"
+        json_abs="$(absolute_path "$APCONFORM_JSON")"
 
         args=(run --adapter "$adapter_abs" --only "$APCONFORM_ONLY"
               --timeout "$APCONFORM_TIMEOUT" --json "$json_abs")
         [ -n "$APCONFORM_FIXTURE" ] && args+=(--fixture "$APCONFORM_FIXTURE")
         [ "$APCONFORM_STRICT" = "true" ] && args+=(--strict-reporting)
-        [ -n "$APCONFORM_JUNIT" ] && args+=(--junit "$GITHUB_WORKSPACE/$APCONFORM_JUNIT")
+        [ -n "$APCONFORM_JUNIT" ] && args+=(--junit "$(absolute_path "$APCONFORM_JUNIT")")
         if [ -n "$APCONFORM_BASELINE" ]; then
-          args+=(--baseline "$GITHUB_WORKSPACE/$APCONFORM_BASELINE")
+          args+=(--baseline "$(absolute_path "$APCONFORM_BASELINE")")
           [ "$APCONFORM_UPDATE_BASELINE" = "true" ] && args+=(--update-baseline)
         fi
 
@@ -119,23 +123,28 @@ runs:
 
         status=0
         ( cd "$work" && npx --yes "$spec" "${args[@]}" ) \
-          | tee "$RUNNER_TEMP/apconform.log" || status=$?
+          | tee "$work/apconform.log" || status=$?
 
         {
           printf '## Agent Plugins conformance\n\n```\n'
-          tail -n 20 "$RUNNER_TEMP/apconform.log"
+          tail -n 20 "$work/apconform.log"
           printf '```\n'
         } >> "$GITHUB_STEP_SUMMARY"
 
-        passed=$(grep -oE '^total +[0-9]+ pass' "$RUNNER_TEMP/apconform.log" | grep -oE '[0-9]+' | head -1)
-        failed=$(grep -oE '[0-9]+ fail' "$RUNNER_TEMP/apconform.log" | tail -1 | grep -oE '[0-9]+')
+        # Setup errors have no total line. Preserve their status rather than failing in grep.
+        passed=$(grep -oE '^total +[0-9]+ pass' "$work/apconform.log" | grep -oE '[0-9]+' | head -1 || true)
+        failed=$(grep -oE '^total +[0-9]+ pass +[0-9]+ fail' "$work/apconform.log" | grep -oE '[0-9]+ fail' | grep -oE '[0-9]+' || true)
+        if { [ "$status" -eq 0 ] || [ "$status" -eq 1 ]; } && { [ -z "$passed" ] || [ -z "$failed" ]; }; then
+          echo "apconform produced no summary; the suite did not complete" >&2
+          status=2
+        fi
         {
           echo "report=$json_abs"
           echo "passed=${passed:-0}"
           echo "failed=${failed:-0}"
         } >> "$GITHUB_OUTPUT"
 
-        if [ "$status" -ne 0 ] && [ "$APCONFORM_FAIL" != "true" ]; then
+        if [ "$status" -eq 1 ] && [ "$APCONFORM_FAIL" = "false" ]; then
           echo "conformance failures found; fail-on-error is false so the step passes"
           exit 0
         fi

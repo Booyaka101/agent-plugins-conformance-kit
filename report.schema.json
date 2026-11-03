@@ -62,6 +62,6 @@
       }
     }
   },
-  "required": ["rejected", "loaded", "skipped", "reported"],
+  "required": ["rejected", "loaded"],
   "additionalProperties": false
 }

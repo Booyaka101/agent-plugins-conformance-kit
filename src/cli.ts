@@ -18,6 +18,7 @@ import { verifyCorpus } from './verify.js';
 import { toJUnitXml } from './junit.js';
 import { BaselineError, compareToBaseline, readBaseline, writeBaseline, type Baseline } from './baseline.js';
 import type { FixtureGroup } from './diff.js';
+import { isPositiveInteger, MAX_TIMEOUT_MS } from './options.js';
 
 const version = (createRequire(import.meta.url)('../package.json') as { version: string }).version;
 
@@ -116,7 +117,7 @@ function optionalNumber(
   const value = optionalString(flags, name);
   if (value === undefined) return undefined;
   const parsed = Number(value);
-  if (!Number.isSafeInteger(parsed) || parsed <= 0 || parsed > max) {
+  if (!isPositiveInteger(parsed, max)) {
     throw new UsageError(`--${name} must be an integer between 1 and ${max}, got "${value}"`);
   }
   return parsed;
@@ -207,7 +208,7 @@ async function commandRun(args: Args): Promise<number> {
   // never lands halfway through a run.
   const adapter = requireString(args.flags, 'adapter');
   const adapterExec = optionalString(args.flags, 'adapter-exec');
-  const timeoutMs = optionalNumber(args.flags, 'timeout', 2_147_483_647);
+  const timeoutMs = optionalNumber(args.flags, 'timeout', MAX_TIMEOUT_MS);
   const concurrency = optionalNumber(args.flags, 'concurrency');
   const jsonPath = optionalString(args.flags, 'json');
   const junitPath = optionalString(args.flags, 'junit');

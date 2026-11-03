@@ -68,6 +68,9 @@ describe('validateLoadReport', () => {
       'reported[0].ruleId must be a string when present',
     ],
     [{ ...valid, extra: true }, 'unknown key "extra"'],
+    [{ ...valid, loaded: { ...valid.loaded, extra: true } }, 'unknown key "extra" in loaded'],
+    [{ ...valid, skipped: [{ what: 'skills/alpha', extra: true }] }, 'unknown key "extra" in skipped[0]'],
+    [{ ...valid, reported: [{ field: 'x', extra: true }] }, 'unknown key "extra" in reported[0]'],
   ])('rejects %j', (input, message) => {
     const result = validateLoadReport(input);
     expect(result).toMatchObject({ ok: false });

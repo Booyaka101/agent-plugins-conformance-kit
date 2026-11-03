@@ -271,7 +271,10 @@ Inputs: `adapter` (required), `only`, `fixture`, `strict-reporting`, `timeout`, 
 `update-baseline`, `json`, `junit`, `version`, `fail-on-error`. Outputs: `report`, `passed`, `failed`. It writes the summary
 to the job summary and the full result to `apconform-report.json`.
 
-Set `fail-on-error: false` to report without gating while you work through the list.
+Set `fail-on-error: false` to report fixture failures and adapter errors without gating
+while you work through the list. Installation, configuration and incomplete-run failures
+still fail the step. Adapter, JSON, JUnit and baseline paths can be absolute or relative
+to the workspace. Temporary installation files and logs are removed after each run.
 
 ## CLI
 
@@ -343,7 +346,7 @@ corpus, so it can wait until 1.1.0 is published and its identifiers resolve.
 
 ```
 npm install
-npm test              # builds, then runs 481 tests
+npm test              # builds, then runs the test suite
 npm run verify:sources # checks every quote against the live specification
 ```
 
@@ -351,6 +354,14 @@ npm run verify:sources # checks every quote against the live specification
 verbatim in the published spec, walks the whole corpus for self-consistency, and drives
 the runner end to end against a perfect-client echo adapter and against a deliberately
 broken, hanging and non-JSON one.
+
+Library callers get the same positive-integer validation as the CLI for concurrency
+and timeouts, including Node's 2147483647 ms timer limit. Custom fixture manifests are
+validated before adapters run, and omitted expectation reporting arrays default to `[]`.
+
+Releases require a `v<package.json version>` tag pointing at the checkout and the latest
+completed, successful push run of `ci.yml` on `main` for that exact commit. Missing,
+running, failed or cancelled CI blocks publication, as does an unavailable GitHub API.
 
 To run the suite against the reference loader locally:
 

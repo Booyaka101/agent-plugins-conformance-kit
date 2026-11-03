@@ -38,6 +38,8 @@ npx apconform run --adapter ./my-adapter.mjs
 ```
 
 `report.schema.json` in this package is the machine-readable version.
+`skipped` and `reported` may be omitted and default to empty arrays. Unknown keys are
+rejected at every report object level, including entries in those arrays.
 
 **`rejected`** is `null` when the plugin loaded, and any short string when it did not. The
 runner compares null against non-null and nothing else, because the specification defines
@@ -74,6 +76,10 @@ warning, never a failure. Most adapters leave it out.
 - The plugin directory is an absolute path that exists.
 - One process per fixture. Nothing is reused between fixtures.
 - Your process is killed after `--timeout` milliseconds, 30 seconds by default.
+  The runner also closes its output pipes so inherited handles cannot prolong the wait.
+  Adapters must clean up any descendants they start; the runner does not kill process trees.
+- Each output stream is limited to 8 MiB of UTF-8 data. Exceeding either limit kills
+  the adapter and records an error.
 - Anything on stderr is ignored unless the adapter also fails, in which case the last few
   lines are quoted in the error.
 - A banner printed before the JSON is tolerated. The parser starts at the first `{`.
@@ -106,6 +112,13 @@ adapter receives is not always inside `fixtures/`. Read the directory you are gi
 Windows refuses symlinks without Developer Mode or elevation. The runner falls back to a
 junction for directory links, and reports `SKIP` with the reason for the one fixture that
 needs a file link. Those fixtures run normally on Linux and macOS.
+
+Unexpected staging failures count as errors, not skips. Custom fixture link destinations
+must stay inside the staged plugin, including when an earlier link redirects a parent
+directory. Invalid destinations abort the run as a corpus error.
+
+Adapters execute with your account's permissions. The runner is not a sandbox: only run
+trusted adapters and custom corpora, and avoid giving them production credentials.
 
 ## Two examples in this package
 

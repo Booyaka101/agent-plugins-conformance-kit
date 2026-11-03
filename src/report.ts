@@ -26,6 +26,12 @@ export type ParseResult =
 const isObject = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 
+function checkKeys(value: Record<string, unknown>, allowed: string[], path: string, errors: string[]): void {
+  for (const key of Object.keys(value)) {
+    if (!allowed.includes(key)) errors.push(`unknown key "${key}" in ${path}`);
+  }
+}
+
 function stringArray(value: unknown, path: string, errors: string[]): string[] {
   if (!Array.isArray(value)) {
     errors.push(`${path} must be an array of strings`);
@@ -59,6 +65,7 @@ function entryList<K extends string>(
       errors.push(`${path}[${i}] must be an object`);
       continue;
     }
+    checkKeys(item, [key, 'ruleId'], `${path}[${i}]`, errors);
     const name = item[key];
     if (typeof name !== 'string') {
       errors.push(`${path}[${i}].${key} must be a string`);
@@ -121,6 +128,7 @@ export function validateLoadReport(parsed: unknown): ParseResult {
   if (!isObject(loadedRaw)) {
     errors.push('missing required object "loaded" with "skills" and "mcpServers" arrays');
   } else {
+    checkKeys(loadedRaw, ['skills', 'mcpServers'], 'loaded', errors);
     skills = stringArray(loadedRaw['skills'], 'loaded.skills', errors);
     mcpServers = stringArray(loadedRaw['mcpServers'], 'loaded.mcpServers', errors);
   }
@@ -128,11 +136,7 @@ export function validateLoadReport(parsed: unknown): ParseResult {
   const skipped = entryList(parsed['skipped'], 'skipped', 'what', errors);
   const reported = entryList(parsed['reported'], 'reported', 'field', errors);
 
-  for (const key of Object.keys(parsed)) {
-    if (!['rejected', 'loaded', 'skipped', 'reported'].includes(key)) {
-      errors.push(`unknown key "${key}" in load report`);
-    }
-  }
+  checkKeys(parsed, ['rejected', 'loaded', 'skipped', 'reported'], 'load report', errors);
 
   if (errors.length > 0) return { ok: false, error: errors.join('; ') };
   return { ok: true, report: { rejected, loaded: { skills, mcpServers }, skipped, reported } };
